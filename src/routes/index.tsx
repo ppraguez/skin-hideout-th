@@ -8,9 +8,9 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CS2Hideout — The Hideout Marketplace for CS2 Traders" },
+      { title: "CS2Hideout — Hideout Marketplace for CS2 Traders" },
       { name: "description", content: "Community-first CS2 skin trading & deal discovery for Southeast Asia. Zero fees. Buy, sell, trade." },
-      { property: "og:title", content: "CS2Hideout — The Hideout Marketplace for CS2 Traders" },
+      { property: "og:title", content: "CS2Hideout — Hideout Marketplace for CS2 Traders" },
       { property: "og:description", content: "Community-first CS2 skin trading & deal discovery for SEA. Zero fees." },
     ],
   }),
