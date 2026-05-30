@@ -9,38 +9,179 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PremiumRouteImport } from './routes/premium'
+import { Route as MatchesRouteImport } from './routes/matches'
+import { Route as MarketRouteImport } from './routes/market'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
+import { Route as MarketCreateRouteImport } from './routes/market.create'
+import { Route as MarketIdRouteImport } from './routes/market.$id'
 
+const PremiumRoute = PremiumRouteImport.update({
+  id: '/premium',
+  path: '/premium',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MatchesRoute = MatchesRouteImport.update({
+  id: '/matches',
+  path: '/matches',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketRoute = MarketRouteImport.update({
+  id: '/market',
+  path: '/market',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
+  id: '/profile/$username',
+  path: '/profile/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketCreateRoute = MarketCreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => MarketRoute,
+} as any)
+const MarketIdRoute = MarketIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MarketRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/community': typeof CommunityRoute
+  '/login': typeof LoginRoute
+  '/market': typeof MarketRouteWithChildren
+  '/matches': typeof MatchesRoute
+  '/premium': typeof PremiumRoute
+  '/market/$id': typeof MarketIdRoute
+  '/market/create': typeof MarketCreateRoute
+  '/profile/$username': typeof ProfileUsernameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/community': typeof CommunityRoute
+  '/login': typeof LoginRoute
+  '/market': typeof MarketRouteWithChildren
+  '/matches': typeof MatchesRoute
+  '/premium': typeof PremiumRoute
+  '/market/$id': typeof MarketIdRoute
+  '/market/create': typeof MarketCreateRoute
+  '/profile/$username': typeof ProfileUsernameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/community': typeof CommunityRoute
+  '/login': typeof LoginRoute
+  '/market': typeof MarketRouteWithChildren
+  '/matches': typeof MatchesRoute
+  '/premium': typeof PremiumRoute
+  '/market/$id': typeof MarketIdRoute
+  '/market/create': typeof MarketCreateRoute
+  '/profile/$username': typeof ProfileUsernameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/community'
+    | '/login'
+    | '/market'
+    | '/matches'
+    | '/premium'
+    | '/market/$id'
+    | '/market/create'
+    | '/profile/$username'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/community'
+    | '/login'
+    | '/market'
+    | '/matches'
+    | '/premium'
+    | '/market/$id'
+    | '/market/create'
+    | '/profile/$username'
+  id:
+    | '__root__'
+    | '/'
+    | '/community'
+    | '/login'
+    | '/market'
+    | '/matches'
+    | '/premium'
+    | '/market/$id'
+    | '/market/create'
+    | '/profile/$username'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CommunityRoute: typeof CommunityRoute
+  LoginRoute: typeof LoginRoute
+  MarketRoute: typeof MarketRouteWithChildren
+  MatchesRoute: typeof MatchesRoute
+  PremiumRoute: typeof PremiumRoute
+  ProfileUsernameRoute: typeof ProfileUsernameRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/premium': {
+      id: '/premium'
+      path: '/premium'
+      fullPath: '/premium'
+      preLoaderRoute: typeof PremiumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/matches': {
+      id: '/matches'
+      path: '/matches'
+      fullPath: '/matches'
+      preLoaderRoute: typeof MatchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/market': {
+      id: '/market'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof MarketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +189,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/$username': {
+      id: '/profile/$username'
+      path: '/profile/$username'
+      fullPath: '/profile/$username'
+      preLoaderRoute: typeof ProfileUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/market/create': {
+      id: '/market/create'
+      path: '/create'
+      fullPath: '/market/create'
+      preLoaderRoute: typeof MarketCreateRouteImport
+      parentRoute: typeof MarketRoute
+    }
+    '/market/$id': {
+      id: '/market/$id'
+      path: '/$id'
+      fullPath: '/market/$id'
+      preLoaderRoute: typeof MarketIdRouteImport
+      parentRoute: typeof MarketRoute
+    }
   }
 }
 
+interface MarketRouteChildren {
+  MarketIdRoute: typeof MarketIdRoute
+  MarketCreateRoute: typeof MarketCreateRoute
+}
+
+const MarketRouteChildren: MarketRouteChildren = {
+  MarketIdRoute: MarketIdRoute,
+  MarketCreateRoute: MarketCreateRoute,
+}
+
+const MarketRouteWithChildren =
+  MarketRoute._addFileChildren(MarketRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CommunityRoute: CommunityRoute,
+  LoginRoute: LoginRoute,
+  MarketRoute: MarketRouteWithChildren,
+  MatchesRoute: MatchesRoute,
+  PremiumRoute: PremiumRoute,
+  ProfileUsernameRoute: ProfileUsernameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
