@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
 import type { Skin } from "@/lib/mock-data";
@@ -92,6 +93,8 @@ function SkinDetail() {
   const { skin } = Route.useLoaderData() as { skin: Skin };
   const lt = skin.listingType;
   const { t, formatPrice } = useI18n();
+  const [imgFailed, setImgFailed] = useState(false);
+
   const similar = SKINS.filter((s) => s.id !== skin.id && s.weapon === skin.weapon).slice(0, 4);
 
   return (
@@ -102,12 +105,19 @@ function SkinDetail() {
 
       <div className="grid lg:grid-cols-[40%_1fr] gap-8">
         <div className="relative skin-thumb rounded-3xl aspect-square noise-overlay glow-border overflow-hidden">
-          {skin.image && (
+          {skin.image && !imgFailed ? (
             <img
               src={skin.image}
               alt={`${skin.weapon} | ${skin.name}`}
+              onError={() => setImgFailed(true)}
               className="absolute inset-0 w-full h-full object-contain p-8 drop-shadow-[0_12px_32px_rgba(0,0,0,0.5)]"
             />
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-surface/40 to-background/60">
+              <div className="font-display text-sm tracking-[0.3em] uppercase text-muted-foreground">{skin.weapon}</div>
+              <div className="font-display text-5xl font-bold mt-3">{skin.name}</div>
+              <div className="mt-4 text-[10px] uppercase tracking-widest text-muted-foreground/50">image unavailable</div>
+            </div>
           )}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
             <div className={`px-3 py-1 rounded-md text-xs font-mono border bg-background/70 backdrop-blur-sm ${WEAR_COLOR[skin.wear]}`}>

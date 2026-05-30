@@ -208,10 +208,55 @@
     border-radius: 0.5rem;
   }
 
+  /* Ticker marquee */
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .marquee-track {
+    display: inline-flex;
+    animation: marquee 40s linear infinite;
+    will-change: transform;
+  }
+  .ticker-bar:hover .marquee-track { animation-play-state: paused; }
+
+  /* Ticker shimmer sweep */
+  @keyframes ticker-shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .ticker-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 0%,
+      color-mix(in oklab, var(--amber, oklch(0.78 0.17 75)) 35%, transparent) 50%,
+      transparent 100%
+    );
+    animation: ticker-shimmer 6s ease-in-out infinite;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  /* Pulsing red live dot */
+  @keyframes live-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    50%      { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 9999px;
+    background: rgb(239, 68, 68);
+    animation: live-pulse 1.6s ease-out infinite;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .reveal, .reveal-stagger > *, .float-card, .animated-mesh, .skeleton {
+    .reveal, .reveal-stagger > *, .float-card, .animated-mesh, .skeleton,
+    .marquee-track, .ticker-shimmer::after, .live-dot {
       animation: none !important;
     }
   }
 }
+
 
