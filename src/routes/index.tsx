@@ -53,10 +53,8 @@ function Hero() {
       <div className="hidden md:block absolute right-32 bottom-6 w-36 rounded-xl skin-thumb aspect-[4/3] border border-amber/40 float-card opacity-80 -rotate-3" style={{ animationDelay: "1.5s" }} />
 
       <div className="relative max-w-2xl reveal">
-        <div className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-primary mb-6">
-          <Radio className="h-3 w-3 animate-pulse" />
-          {t("home.liveSea")}
-        </div>
+        <TickerBar />
+
         <h1 className="font-display text-4xl sm:text-6xl font-bold leading-[1.05]">
           {t("home.heroTitleA")} <span className="text-primary">{t("home.heroTitleHighlight")}</span><br />
           {t("home.heroTitleB")}
