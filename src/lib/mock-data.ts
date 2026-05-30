@@ -194,10 +194,10 @@ export interface Match {
 }
 
 export const MATCHES: Match[] = [
-  { id: "m1", teamA: "NAVI", teamB: "FaZe", tournament: "BLAST Premier", tier: "S", time: "วันนี้ 22:00", status: "live", scoreA: 1, scoreB: 0 },
-  { id: "m2", teamA: "Vitality", teamB: "G2", tournament: "IEM Katowice", tier: "S", time: "พรุ่งนี้ 19:30", status: "upcoming" },
-  { id: "m3", teamA: "MOUZ", teamB: "Spirit", tournament: "ESL Pro League", tier: "A", time: "พรุ่งนี้ 23:00", status: "upcoming" },
-  { id: "m4", teamA: "Cloud9", teamB: "Liquid", tournament: "BLAST Premier", tier: "S", time: "ศุกร์ 21:00", status: "upcoming" },
+  { id: "m1", teamA: "NAVI", teamB: "FaZe", tournament: "BLAST Premier", tier: "S", time: "Today 22:00", status: "live", scoreA: 1, scoreB: 0 },
+  { id: "m2", teamA: "Vitality", teamB: "G2", tournament: "IEM Katowice", tier: "S", time: "Tomorrow 19:30", status: "upcoming" },
+  { id: "m3", teamA: "MOUZ", teamB: "Spirit", tournament: "ESL Pro League", tier: "A", time: "Tomorrow 23:00", status: "upcoming" },
+  { id: "m4", teamA: "Cloud9", teamB: "Liquid", tournament: "BLAST Premier", tier: "S", time: "Fri 21:00", status: "upcoming" },
 ];
 
 export function formatThb(n: number) {
