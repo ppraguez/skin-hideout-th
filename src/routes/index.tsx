@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
 import { SKINS, POSTS, MATCHES } from "@/lib/mock-data";
 import { Flame, ArrowRight, MessageCircle, Heart, Radio } from "lucide-react";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,25 +30,24 @@ function Home() {
 }
 
 function Hero() {
+  const { t } = useI18n();
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border bg-surface/60 noise-overlay px-6 sm:px-12 py-14 sm:py-20 mb-16">
       <div className="animated-mesh absolute inset-0 opacity-70" />
-      {/* Floating skin cards (decorative) */}
       <div className="hidden md:block absolute -right-10 top-10 w-44 rounded-xl skin-thumb aspect-[4/3] glow-border float-card opacity-90 rotate-6" />
       <div className="hidden md:block absolute right-32 bottom-6 w-36 rounded-xl skin-thumb aspect-[4/3] border border-amber/40 float-card opacity-80 -rotate-3" style={{ animationDelay: "1.5s" }} />
 
       <div className="relative max-w-2xl">
         <div className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-primary mb-6">
           <Radio className="h-3 w-3 animate-pulse" />
-          Live · Southeast Asia
+          {t("home.liveSea")}
         </div>
         <h1 className="font-display text-4xl sm:text-6xl font-bold leading-[1.05]">
-          The <span className="text-primary">Hideout Marketplace</span><br />
-          for CS2 Traders
+          {t("home.heroTitleA")} <span className="text-primary">{t("home.heroTitleHighlight")}</span><br />
+          {t("home.heroTitleB")}
         </h1>
         <p className="mt-5 text-base sm:text-lg text-muted-foreground max-w-lg">
-          ซื้อ ขาย แลกเปลี่ยน — ฟรีค่าธรรมเนียม
-          <span className="block text-sm mt-1 opacity-70">Buy, Sell, Trade — Zero Fees. Ever.</span>
+          {t("home.heroSub")}
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
@@ -55,22 +55,21 @@ function Hero() {
             to="/login"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-border hover:brightness-110 transition"
           >
-            Connect Steam
+            {t("home.ctaConnect")}
           </Link>
           <Link
             to="/market"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-surface/70 backdrop-blur font-semibold text-sm hover:border-primary/60 transition"
           >
-            Browse Skins <ArrowRight className="h-4 w-4" />
+            {t("home.ctaBrowse")} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
-        {/* Stats bar */}
         <div className="mt-10 grid grid-cols-3 gap-4 sm:gap-8 max-w-md">
           {[
-            { v: "12,480", l: "skins listed" },
-            { v: "3,210", l: "active traders" },
-            { v: "284", l: "deals today" },
+            { v: "12,480", l: t("home.statListed") },
+            { v: "3,210", l: t("home.statActive") },
+            { v: "284", l: t("home.statToday") },
           ].map((s) => (
             <div key={s.l}>
               <div className="font-mono text-xl sm:text-2xl font-bold text-foreground tabular-nums">{s.v}</div>
@@ -84,18 +83,19 @@ function Hero() {
 }
 
 function HotDeals() {
+  const { t } = useI18n();
   return (
     <section className="mb-16">
       <div className="flex items-end justify-between mb-6">
         <div>
           <h2 className="font-display text-2xl sm:text-3xl font-bold flex items-center gap-3">
             <Flame className="h-6 w-6 text-amber" />
-            Hot Deals Right Now
+            {t("home.hotDeals")}
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">Below-market listings, curated daily.</p>
+          <p className="text-sm text-muted-foreground mt-1">{t("home.hotDealsSub")}</p>
         </div>
         <Link to="/market" className="text-sm text-primary hover:underline hidden sm:flex items-center gap-1">
-          View all <ArrowRight className="h-4 w-4" />
+          {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
@@ -106,9 +106,10 @@ function HotDeals() {
 }
 
 function CommunityPreview() {
+  const { t, formatTime } = useI18n();
   return (
     <section className="mb-16">
-      <h2 className="font-display text-2xl sm:text-3xl font-bold mb-6">From the Community</h2>
+      <h2 className="font-display text-2xl sm:text-3xl font-bold mb-6">{t("home.fromCommunity")}</h2>
       <div className="grid md:grid-cols-3 gap-4">
         {POSTS.map((p) => (
           <Link
@@ -121,7 +122,7 @@ function CommunityPreview() {
                 <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/40 to-amber/30 border border-border" />
                 <div>
                   <div className="text-sm font-semibold">{p.username} {p.location}</div>
-                  <div className="text-[11px] text-muted-foreground">{p.timestamp}</div>
+                  <div className="text-[11px] text-muted-foreground">{formatTime(p.timestamp)}</div>
                 </div>
               </div>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded border border-primary/30 bg-primary/10 text-primary">
@@ -141,12 +142,13 @@ function CommunityPreview() {
 }
 
 function MatchesPreview() {
+  const { t, formatTime } = useI18n();
   return (
     <section className="mb-16">
       <div className="flex items-end justify-between mb-6">
-        <h2 className="font-display text-2xl sm:text-3xl font-bold">Upcoming CS2 Matches</h2>
+        <h2 className="font-display text-2xl sm:text-3xl font-bold">{t("home.upcomingMatches")}</h2>
         <Link to="/matches" className="text-sm text-primary hover:underline hidden sm:flex items-center gap-1">
-          View all <ArrowRight className="h-4 w-4" />
+          {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
       <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -154,18 +156,18 @@ function MatchesPreview() {
           <div key={m.id} className="glass-card rounded-2xl p-5 hover:glow-border transition">
             <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground mb-4">
               <span>{m.tournament}</span>
-              <span className="text-amber">Tier {m.tier}</span>
+              <span className="text-amber">{t("common.tierShort", { tier: m.tier })}</span>
             </div>
             <div className="flex items-center justify-between mb-4">
               <TeamBlock name={m.teamA} />
-              <span className="font-mono text-xs text-muted-foreground">VS</span>
+              <span className="font-mono text-xs text-muted-foreground">{t("common.vs")}</span>
               <TeamBlock name={m.teamB} />
             </div>
             <div className="flex items-center justify-between pt-3 border-t border-border text-xs">
-              <span className="text-muted-foreground">{m.time}</span>
+              <span className="text-muted-foreground">{formatTime(m.time)}</span>
               {m.status === "live"
-                ? <span className="text-destructive font-bold flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" /> LIVE</span>
-                : <Link to="/matches" className="text-primary">View →</Link>}
+                ? <span className="text-destructive font-bold flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" /> {t("common.live")}</span>
+                : <Link to="/matches" className="text-primary">{t("home.viewArrow")}</Link>}
             </div>
           </div>
         ))}
@@ -175,6 +177,7 @@ function MatchesPreview() {
 }
 
 function TeamBlock({ name }: { name: string }) {
+  // Team names always English
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-surface-elevated to-surface border border-border flex items-center justify-center text-[10px] font-display font-bold">
@@ -186,20 +189,21 @@ function TeamBlock({ name }: { name: string }) {
 }
 
 function Footer() {
+  const { t } = useI18n();
   return (
     <footer className="mt-20 pt-10 border-t border-border">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="font-display font-bold text-lg">CS2Hideout</div>
           <p className="text-xs text-muted-foreground mt-1 max-w-xs">
-            Community-built. Zero fees. Just traders helping traders find great deals across SEA.
+            {t("footer.tagline")}
           </p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground">
-          <a className="hover:text-primary">About</a>
-          <a className="hover:text-primary">Discord</a>
-          <a className="hover:text-primary">Terms</a>
-          <a className="hover:text-primary">Privacy</a>
+          <a className="hover:text-primary">{t("footer.about")}</a>
+          <a className="hover:text-primary">{t("footer.discord")}</a>
+          <a className="hover:text-primary">{t("footer.terms")}</a>
+          <a className="hover:text-primary">{t("footer.privacy")}</a>
         </div>
         <div className="flex gap-3 text-xs">
           <a className="px-2 py-1 rounded border border-border hover:border-primary/50">Discord</a>
@@ -208,7 +212,7 @@ function Footer() {
         </div>
       </div>
       <div className="text-center text-[11px] text-muted-foreground mt-8">
-        © 2026 CS2Hideout · Not affiliated with Valve. CS2 and skin names © Valve.
+        {t("footer.copyright")}
       </div>
     </footer>
   );
