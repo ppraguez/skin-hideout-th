@@ -19,23 +19,28 @@ export function SkinCard({ skin }: { skin: Skin }) {
     >
       {/* Thumb */}
       <div className="relative skin-thumb aspect-[4/3] noise-overlay overflow-hidden">
-        {skin.image ? (
+        {skin.image && !imgFailed ? (
           <img
             src={skin.image}
             alt={`${skin.weapon} | ${skin.name}`}
             loading="lazy"
+            onError={() => setImgFailed(true)}
             className="absolute inset-0 w-full h-full object-contain p-4 drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-            <div className="font-display text-xs tracking-[0.2em] uppercase text-muted-foreground">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-surface/40 to-background/60">
+            <div className="font-display text-[10px] tracking-[0.25em] uppercase text-muted-foreground/70">
               {skin.weapon}
             </div>
             <div className="font-display text-2xl font-bold mt-1 text-foreground/90">
               {skin.name}
             </div>
+            <div className="mt-3 text-[9px] uppercase tracking-widest text-muted-foreground/50">
+              image unavailable
+            </div>
           </div>
         )}
+
 
         {/* badges row — wear codes always English */}
         <div className="absolute top-3 left-3 flex gap-1.5">
