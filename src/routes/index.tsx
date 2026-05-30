@@ -7,9 +7,9 @@ import { Flame, ArrowRight, MessageCircle, Heart, Radio } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CS2Hideout — The Hideout Market for CS2 Traders" },
+      { title: "CS2Hideout — The Hideout Marketplace for CS2 Traders" },
       { name: "description", content: "Community-first CS2 skin trading & deal discovery for Southeast Asia. Zero fees. Buy, sell, trade." },
-      { property: "og:title", content: "CS2Hideout — The Hideout Market for CS2 Traders" },
+      { property: "og:title", content: "CS2Hideout — The Hideout Marketplace for CS2 Traders" },
       { property: "og:description", content: "Community-first CS2 skin trading & deal discovery for SEA. Zero fees." },
     ],
   }),
@@ -42,7 +42,7 @@ function Hero() {
           Live · Southeast Asia
         </div>
         <h1 className="font-display text-4xl sm:text-6xl font-bold leading-[1.05]">
-          The <span className="text-primary">Hideout Market</span><br />
+          The <span className="text-primary">Hideout Marketplace</span><br />
           for CS2 Traders
         </h1>
         <p className="mt-5 text-base sm:text-lg text-muted-foreground max-w-lg">
