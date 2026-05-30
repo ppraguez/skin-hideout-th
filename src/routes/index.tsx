@@ -5,6 +5,8 @@ import { SKINS, POSTS, MATCHES } from "@/lib/mock-data";
 import { Flame, ArrowRight, MessageCircle, Heart } from "lucide-react";
 import { TickerBar } from "@/components/TickerBar";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import heroLogo from "@/assets/cs2hideout-logo.png";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,8 +51,15 @@ function Hero() {
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border bg-surface/60 noise-overlay px-6 sm:px-12 py-14 sm:py-20 mb-16">
       <div className="animated-mesh absolute inset-0 opacity-70" />
-      <div className="hidden md:block absolute -right-10 top-10 w-44 rounded-xl skin-thumb aspect-[4/3] glow-border float-card opacity-90 rotate-6" />
-      <div className="hidden md:block absolute right-32 bottom-6 w-36 rounded-xl skin-thumb aspect-[4/3] border border-amber/40 float-card opacity-80 -rotate-3" style={{ animationDelay: "1.5s" }} />
+      <div aria-hidden className="hidden md:block pointer-events-none absolute -right-10 top-1/2 -translate-y-1/2 w-[420px] lg:w-[520px] aspect-square opacity-95 float-card">
+        <div className="absolute inset-8 rounded-full bg-primary/25 blur-3xl" />
+        <img
+          src={heroLogo}
+          alt="CS2Hideout logo"
+          className="relative w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(255,107,53,0.35)]"
+        />
+      </div>
+
 
       <div className="relative max-w-2xl reveal">
         <TickerBar />
