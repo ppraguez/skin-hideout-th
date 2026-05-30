@@ -5,6 +5,8 @@ import { SKINS, POSTS, MATCHES } from "@/lib/mock-data";
 import { Flame, ArrowRight, MessageCircle, Heart } from "lucide-react";
 import { TickerBar } from "@/components/TickerBar";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import heroLogo from "@/assets/cs2hideout-logo.png";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
