@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import type { Skin } from "@/lib/mock-data";
 import { WEAR_COLOR, WEAR_LABEL } from "@/lib/mock-data";
 import { Star, ArrowRight } from "lucide-react";
@@ -7,6 +8,8 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 export function SkinCard({ skin }: { skin: Skin }) {
   const lt = skin.listingType;
   const { t, formatPrice } = useI18n();
+  const [imgFailed, setImgFailed] = useState(false);
+
 
   return (
     <Link
