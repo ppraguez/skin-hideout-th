@@ -220,10 +220,28 @@
   }
   .ticker-bar:hover .marquee-track { animation-play-state: paused; }
 
-  /* Ticker shimmer sweep */
+  /* Premium mesh gradient + slow drift */
+  @keyframes ticker-mesh-drift {
+    0%   { background-position: 0% 50%, 100% 50%, 50% 0%; }
+    50%  { background-position: 100% 50%, 0% 50%, 50% 100%; }
+    100% { background-position: 0% 50%, 100% 50%, 50% 0%; }
+  }
+  .ticker-mesh {
+    background-image:
+      radial-gradient(60% 120% at 0% 50%, color-mix(in oklab, var(--primary) 22%, transparent) 0%, transparent 60%),
+      radial-gradient(55% 120% at 100% 50%, color-mix(in oklab, var(--amber) 22%, transparent) 0%, transparent 60%),
+      radial-gradient(80% 140% at 50% 50%, color-mix(in oklab, var(--surface-elevated) 70%, transparent) 0%, transparent 70%);
+    background-size: 200% 200%, 200% 200%, 200% 200%;
+    background-color: color-mix(in oklab, var(--surface) 92%, black);
+    animation: ticker-mesh-drift 18s ease-in-out infinite;
+  }
+
+  /* Ticker shimmer sweep (subtle) */
   @keyframes ticker-shimmer {
-    0%   { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0%   { transform: translateX(-100%); opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
   }
   .ticker-shimmer::after {
     content: "";
@@ -231,14 +249,15 @@
     inset: 0;
     background: linear-gradient(
       110deg,
-      transparent 0%,
-      color-mix(in oklab, var(--amber, oklch(0.78 0.17 75)) 35%, transparent) 50%,
-      transparent 100%
+      transparent 35%,
+      color-mix(in oklab, var(--amber, oklch(0.78 0.17 75)) 14%, transparent) 50%,
+      transparent 65%
     );
-    animation: ticker-shimmer 6s ease-in-out infinite;
+    animation: ticker-shimmer 9s ease-in-out infinite;
     pointer-events: none;
     mix-blend-mode: screen;
   }
+
 
   /* Pulsing red live dot */
   @keyframes live-pulse {
