@@ -23,25 +23,22 @@ export function TickerBar() {
 
   return (
     <div
-      className="ticker-bar ticker-shimmer relative overflow-hidden rounded-xl border border-amber/40
-                 bg-gradient-to-r from-amber/15 via-primary/10 to-amber/15
-                 backdrop-blur-sm mb-6"
+      className="ticker-bar ticker-mesh ticker-shimmer relative overflow-hidden
+                 rounded-full border border-white/5
+                 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_8px_24px_-12px_rgba(0,0,0,0.6)]
+                 mb-6"
     >
-      {/* Fade masks on the edges */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-background to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background via-background/60 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background via-background/60 to-transparent z-10" />
 
-
-      <div className="relative flex items-center gap-3 py-2.5 px-4 sm:px-20 overflow-hidden">
-        {/* Live indicator (fixed, doesn't scroll) */}
-        <div className="hidden md:flex items-center gap-2 shrink-0 z-20 pr-3 border-r border-amber/30">
+      <div className="relative flex items-center py-2 pl-5 pr-4 sm:pl-6 overflow-hidden">
+        <div className="flex items-center gap-2.5 shrink-0 z-20 pr-5 mr-5 border-r border-white/10">
           <span className="live-dot" />
-          <span className="font-display text-[10px] font-bold tracking-[0.25em] text-amber uppercase">
-            LIVE
+          <span className="font-display text-[10px] font-bold tracking-[0.3em] text-amber uppercase">
+            Live
           </span>
         </div>
 
-        {/* Scrolling track */}
         <div className="overflow-hidden flex-1">
           <div className="marquee-track whitespace-nowrap">
             {loop.map((text, i) => {
@@ -49,10 +46,10 @@ export function TickerBar() {
               return (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-3 px-4 font-mono text-[11px] sm:text-xs
-                             tracking-[0.15em] uppercase text-foreground/85"
+                  className="inline-flex items-center gap-4 px-6 font-mono text-[11px]
+                             tracking-[0.18em] uppercase text-foreground/80"
                 >
-                  <Sep className="h-3 w-3 text-amber/80" />
+                  <Sep className="h-3 w-3 text-amber/60" />
                   <span>{text}</span>
                 </span>
               );
@@ -63,3 +60,4 @@ export function TickerBar() {
     </div>
   );
 }
+
