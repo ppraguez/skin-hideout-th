@@ -5,9 +5,19 @@ import { Check } from "lucide-react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/market/create")({
-  head: () => ({ meta: [{ title: "Post a Listing — CS2Hideout" }] }),
+  head: () => ({
+    meta: [
+      { title: "Post a Listing — CS2Hideout" },
+      { name: "description", content: "Post a CS2 skin for sale or trade on CS2Hideout in three quick steps." },
+      { property: "og:title", content: "Post a Listing — CS2Hideout" },
+      { property: "og:url", content: "/market/create" },
+      { name: "robots", content: "noindex" },
+    ],
+    links: [{ rel: "canonical", href: "/market/create" }],
+  }),
   component: CreateListing,
 });
+
 
 type Mode = "sell" | "trade" | "both";
 

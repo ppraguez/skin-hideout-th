@@ -3,9 +3,19 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Sign In — CS2Hideout" }] }),
+  head: () => ({
+    meta: [
+      { title: "Sign In — CS2Hideout" },
+      { name: "description", content: "Sign in to CS2Hideout with Steam to list, trade, and watch CS2 skins." },
+      { property: "og:title", content: "Sign In — CS2Hideout" },
+      { property: "og:url", content: "/login" },
+      { name: "robots", content: "noindex" },
+    ],
+    links: [{ rel: "canonical", href: "/login" }],
+  }),
   component: Login,
 });
+
 
 function Login() {
   const { t } = useI18n();
