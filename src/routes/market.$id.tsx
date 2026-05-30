@@ -1,11 +1,12 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
+import type { Skin } from "@/lib/mock-data";
 import { SKINS, WEAR_COLOR, WEAR_LABEL, formatThb } from "@/lib/mock-data";
 import { ExternalLink, MessageCircle, Heart, Star, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/market/$id")({
-  loader: ({ params }) => {
+  loader: ({ params }): { skin: Skin } => {
     const skin = SKINS.find((s) => s.id === params.id);
     if (!skin) throw notFound();
     return { skin };
