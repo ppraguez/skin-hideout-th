@@ -1,5 +1,6 @@
 import { Crosshair, Swords, Target, Flame, Zap } from "lucide-react";
 import { SKINS } from "@/lib/mock-data";
+import hideoutLogo from "@/assets/cs2-hideout-logo.png";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 // Karambit images sourced from the existing mock data (Steam CDN)
