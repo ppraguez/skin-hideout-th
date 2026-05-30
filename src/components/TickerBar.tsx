@@ -1,12 +1,5 @@
 import { Crosshair, Swords, Target, Flame, Zap } from "lucide-react";
-import { SKINS } from "@/lib/mock-data";
 import { useI18n } from "@/lib/i18n/I18nProvider";
-
-// Karambit images sourced from the existing mock data (Steam CDN)
-const KARAMBIT_FADE =
-  SKINS.find((s) => s.weapon === "Karambit" && s.name === "Fade")?.image;
-const KARAMBIT_DOPPLER =
-  SKINS.find((s) => s.weapon === "Karambit" && s.name === "Doppler")?.image;
 
 const SEPARATORS = [Crosshair, Swords, Target, Flame, Zap];
 
@@ -34,32 +27,10 @@ export function TickerBar() {
                  bg-gradient-to-r from-amber/15 via-primary/10 to-amber/15
                  backdrop-blur-sm mb-6"
     >
-      {/* Karambit left */}
-      {KARAMBIT_FADE && (
-        <img
-          src={KARAMBIT_FADE}
-          alt=""
-          aria-hidden
-          className="hidden sm:block absolute -left-4 top-1/2 -translate-y-1/2 h-16 w-auto
-                     object-contain pointer-events-none select-none
-                     -rotate-12 opacity-90 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
-        />
-      )}
-      {/* Karambit right */}
-      {KARAMBIT_DOPPLER && (
-        <img
-          src={KARAMBIT_DOPPLER}
-          alt=""
-          aria-hidden
-          className="hidden sm:block absolute -right-4 top-1/2 -translate-y-1/2 h-16 w-auto
-                     object-contain pointer-events-none select-none
-                     rotate-12 opacity-90 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
-        />
-      )}
-
       {/* Fade masks on the edges */}
       <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-background to-transparent z-10" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background to-transparent z-10" />
+
 
       <div className="relative flex items-center gap-3 py-2.5 px-4 sm:px-20 overflow-hidden">
         {/* Live indicator (fixed, doesn't scroll) */}
