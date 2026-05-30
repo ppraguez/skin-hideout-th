@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
 import { SKINS } from "@/lib/mock-data";
 import { Star, Crown } from "lucide-react";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/profile/$username")({
   head: () => ({ meta: [{ title: "Profile — CS2Hideout" }] }),
@@ -11,6 +12,14 @@ export const Route = createFileRoute("/profile/$username")({
 
 function Profile() {
   const { username } = Route.useParams();
+  const { t, formatPrice } = useI18n();
+
+  const stats = [
+    { l: t("profile.trades"), v: "142" },
+    { l: t("profile.volume"), v: formatPrice(1200000).replace(",000,000", "M").replace(/\d+/, "1.2") },
+    { l: t("profile.positive"), v: "98%" },
+    { l: t("profile.rep"), v: "4.9", icon: true },
+  ];
 
   return (
     <AppLayout>
@@ -24,24 +33,19 @@ function Profile() {
           <div className="flex items-center gap-2">
             <h1 className="font-display text-2xl sm:text-3xl font-bold">{username}</h1>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-amber/40 bg-amber/10 text-amber text-[10px] font-bold">
-              <Crown className="h-3 w-3" /> PREMIUM
+              <Crown className="h-3 w-3" /> {t("profile.premium")}
             </span>
           </div>
-          <div className="text-sm text-muted-foreground mt-1">🇹🇭 Bangkok · Member since 2024</div>
+          <div className="text-sm text-muted-foreground mt-1">{t("profile.locationLine")}</div>
         </div>
         <div className="flex gap-2">
-          <button className="px-4 py-2 rounded-lg border border-border text-sm">Message</button>
-          <button className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold">Follow</button>
+          <button className="px-4 py-2 rounded-lg border border-border text-sm">{t("profile.message")}</button>
+          <button className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold">{t("profile.follow")}</button>
         </div>
       </div>
 
       <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          { l: "Trades", v: "142" },
-          { l: "Total volume", v: "฿1.2M" },
-          { l: "Positive", v: "98%" },
-          { l: "Reputation", v: "4.9", icon: true },
-        ].map((s) => (
+        {stats.map((s) => (
           <div key={s.l} className="glass-card rounded-2xl p-4">
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.l}</div>
             <div className="font-mono text-2xl font-bold mt-1 flex items-center gap-1">
@@ -51,7 +55,7 @@ function Profile() {
         ))}
       </div>
 
-      <h2 className="font-display text-xl font-bold mt-10 mb-4">Active listings</h2>
+      <h2 className="font-display text-xl font-bold mt-10 mb-4">{t("profile.activeListings")}</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
         {SKINS.slice(0, 4).map((s) => <SkinCard key={s.id} skin={s} />)}
       </div>

@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import type { Skin } from "@/lib/mock-data";
-import { WEAR_COLOR, WEAR_LABEL, formatThb } from "@/lib/mock-data";
+import { WEAR_COLOR, WEAR_LABEL } from "@/lib/mock-data";
 import { Star, ArrowRight } from "lucide-react";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export function SkinCard({ skin }: { skin: Skin }) {
   const lt = skin.listingType;
+  const { t, formatPrice } = useI18n();
 
   return (
     <Link
@@ -23,7 +25,7 @@ export function SkinCard({ skin }: { skin: Skin }) {
           </div>
         </div>
 
-        {/* badges row */}
+        {/* badges row — wear codes always English */}
         <div className="absolute top-3 left-3 flex gap-1.5">
           <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold border bg-background/70 backdrop-blur-sm ${WEAR_COLOR[skin.wear]}`}>
             {skin.wear}
@@ -37,7 +39,7 @@ export function SkinCard({ skin }: { skin: Skin }) {
 
         {skin.dealScore && (
           <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-success/15 border border-success/40 text-success text-[10px] font-semibold">
-            -{skin.dealScore}% market
+            {t("skinCard.belowMarket", { pct: skin.dealScore })}
           </div>
         )}
       </div>
@@ -57,27 +59,27 @@ export function SkinCard({ skin }: { skin: Skin }) {
         <div className="flex items-center justify-between gap-2">
           {lt === "sell" && (
             <span className="px-2 py-1 text-[10px] font-bold rounded-md bg-primary/15 text-primary border border-primary/30">
-              💰 SELL
+              {t("skinCard.sellBadge")}
             </span>
           )}
           {lt === "trade" && (
             <span className="px-2 py-1 text-[10px] font-bold rounded-md bg-amber/15 text-amber border border-amber/30">
-              🔄 TRADE
+              {t("skinCard.tradeBadge")}
             </span>
           )}
           {lt === "both" && (
             <span className="px-2 py-1 text-[10px] font-bold rounded-md bg-gradient-to-r from-primary/15 to-amber/15 text-foreground border border-border">
-              💰🔄 SELL / TRADE
+              {t("skinCard.bothBadge")}
             </span>
           )}
 
           {skin.priceThb ? (
             <div className="font-mono font-bold text-base text-foreground tabular-nums">
-              {formatThb(skin.priceThb)}
+              {formatPrice(skin.priceThb)}
             </div>
           ) : (
             <div className="text-[11px] text-muted-foreground truncate max-w-[55%] text-right">
-              for {skin.desiredItem}
+              {t("skinCard.for")} {skin.desiredItem}
             </div>
           )}
         </div>
