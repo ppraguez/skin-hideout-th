@@ -12,11 +12,12 @@ export const Route = createFileRoute("/profile/$username")({
 
 function Profile() {
   const { username } = Route.useParams();
-  const { t, formatPrice } = useI18n();
+  const { t, locale } = useI18n();
 
+  const volume = locale === "th" ? "ราคา ฿1.2M" : "฿1.2M";
   const stats = [
     { l: t("profile.trades"), v: "142" },
-    { l: t("profile.volume"), v: formatPrice(1200000).replace(",000,000", "M").replace(/\d+/, "1.2") },
+    { l: t("profile.volume"), v: volume },
     { l: t("profile.positive"), v: "98%" },
     { l: t("profile.rep"), v: "4.9", icon: true },
   ];
