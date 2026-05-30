@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
 import { SKINS, POSTS, MATCHES } from "@/lib/mock-data";
-import { Flame, ArrowRight, MessageCircle, Heart, Radio } from "lucide-react";
+import { Flame, ArrowRight, MessageCircle, Heart } from "lucide-react";
+import { TickerBar } from "@/components/TickerBar";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/")({
