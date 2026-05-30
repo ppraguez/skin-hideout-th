@@ -12,10 +12,24 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Community-first CS2 skin trading & deal discovery for Southeast Asia. Zero fees. Buy, sell, trade." },
       { property: "og:title", content: "CS2Hideout — Hideout Marketplace for CS2 Traders" },
       { property: "og:description", content: "Community-first CS2 skin trading & deal discovery for SEA. Zero fees." },
+      { property: "og:url", content: "/" },
     ],
+    links: [{ rel: "canonical", href: "/" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "CS2Hideout",
+        description: "Hideout marketplace for CS2 traders.",
+        url: "/",
+        areaServed: ["TH", "VN", "PH", "MY", "SG", "ID", "Worldwide"],
+      }),
+    }],
   }),
   component: Home,
 });
+
 
 function Home() {
   return (
@@ -37,7 +51,7 @@ function Hero() {
       <div className="hidden md:block absolute -right-10 top-10 w-44 rounded-xl skin-thumb aspect-[4/3] glow-border float-card opacity-90 rotate-6" />
       <div className="hidden md:block absolute right-32 bottom-6 w-36 rounded-xl skin-thumb aspect-[4/3] border border-amber/40 float-card opacity-80 -rotate-3" style={{ animationDelay: "1.5s" }} />
 
-      <div className="relative max-w-2xl">
+      <div className="relative max-w-2xl reveal">
         <div className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-primary mb-6">
           <Radio className="h-3 w-3 animate-pulse" />
           {t("home.liveSea")}
@@ -98,7 +112,7 @@ function HotDeals() {
           {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 reveal-stagger">
         {SKINS.slice(0, 8).map((s) => <SkinCard key={s.id} skin={s} />)}
       </div>
     </section>
@@ -110,7 +124,7 @@ function CommunityPreview() {
   return (
     <section className="mb-16">
       <h2 className="font-display text-2xl sm:text-3xl font-bold mb-6">{t("home.fromCommunity")}</h2>
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-3 gap-4 reveal-stagger">
         {POSTS.map((p) => (
           <Link
             to="/community"
@@ -151,7 +165,7 @@ function MatchesPreview() {
           {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
-      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4 reveal-stagger">
         {MATCHES.map((m) => (
           <div key={m.id} className="glass-card rounded-2xl p-5 hover:glow-border transition">
             <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground mb-4">

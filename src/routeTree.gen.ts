@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as MarketRouteImport } from './routes/market'
@@ -19,6 +20,11 @@ import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as MarketCreateRouteImport } from './routes/market.create'
 import { Route as MarketIdRouteImport } from './routes/market.$id'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PremiumRoute = PremiumRouteImport.update({
   id: '/premium',
   path: '/premium',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/market': typeof MarketRouteWithChildren
   '/matches': typeof MatchesRoute
   '/premium': typeof PremiumRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
   '/profile/$username': typeof ProfileUsernameRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/market': typeof MarketRouteWithChildren
   '/matches': typeof MatchesRoute
   '/premium': typeof PremiumRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
   '/profile/$username': typeof ProfileUsernameRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/market': typeof MarketRouteWithChildren
   '/matches': typeof MatchesRoute
   '/premium': typeof PremiumRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
   '/profile/$username': typeof ProfileUsernameRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/matches'
     | '/premium'
+    | '/sitemap.xml'
     | '/market/$id'
     | '/market/create'
     | '/profile/$username'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/matches'
     | '/premium'
+    | '/sitemap.xml'
     | '/market/$id'
     | '/market/create'
     | '/profile/$username'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/matches'
     | '/premium'
+    | '/sitemap.xml'
     | '/market/$id'
     | '/market/create'
     | '/profile/$username'
@@ -142,11 +154,19 @@ export interface RootRouteChildren {
   MarketRoute: typeof MarketRouteWithChildren
   MatchesRoute: typeof MatchesRoute
   PremiumRoute: typeof PremiumRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/premium': {
       id: '/premium'
       path: '/premium'
@@ -233,6 +253,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketRoute: MarketRouteWithChildren,
   MatchesRoute: MatchesRoute,
   PremiumRoute: PremiumRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
 }
 export const routeTree = rootRouteImport

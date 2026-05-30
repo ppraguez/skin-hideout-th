@@ -6,9 +6,19 @@ import { Heart, MessageCircle, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/community")({
-  head: () => ({ meta: [{ title: "Community — CS2Hideout" }, { name: "description", content: "Traders, posts, and discussions across the SEA CS2 scene." }] }),
+  head: () => ({
+    meta: [
+      { title: "Community — CS2Hideout" },
+      { name: "description", content: "Traders, posts, and discussions across the SEA CS2 scene." },
+      { property: "og:title", content: "CS2 Trader Community — CS2Hideout" },
+      { property: "og:description", content: "Traders, posts, and discussions across the SEA CS2 scene." },
+      { property: "og:url", content: "/community" },
+    ],
+    links: [{ rel: "canonical", href: "/community" }],
+  }),
   component: Community,
 });
+
 
 const TRADERS = [
   { u: "BangkokTrader", flag: "🇹🇭", trades: 142, rep: 4.9, tags: ["Rifles", "AK"] },
