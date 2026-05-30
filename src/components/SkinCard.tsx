@@ -16,14 +16,23 @@ export function SkinCard({ skin }: { skin: Skin }) {
     >
       {/* Thumb */}
       <div className="relative skin-thumb aspect-[4/3] noise-overlay overflow-hidden">
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-          <div className="font-display text-xs tracking-[0.2em] uppercase text-muted-foreground">
-            {skin.weapon}
+        {skin.image ? (
+          <img
+            src={skin.image}
+            alt={`${skin.weapon} | ${skin.name}`}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-contain p-4 drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+            <div className="font-display text-xs tracking-[0.2em] uppercase text-muted-foreground">
+              {skin.weapon}
+            </div>
+            <div className="font-display text-2xl font-bold mt-1 text-foreground/90">
+              {skin.name}
+            </div>
           </div>
-          <div className="font-display text-2xl font-bold mt-1 text-foreground/90">
-            {skin.name}
-          </div>
-        </div>
+        )}
 
         {/* badges row — wear codes always English */}
         <div className="absolute top-3 left-3 flex gap-1.5">
