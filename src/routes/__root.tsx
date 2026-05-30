@@ -78,19 +78,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "CS2Hideout — Hideout Marketplace for CS2 Traders" },
+      { name: "description", content: "Community-first CS2 skin trading & deal discovery for Southeast Asia. Zero fees. Buy, sell, trade." },
+      { name: "author", content: "CS2Hideout" },
+      { name: "theme-color", content: "#FF6B00" },
+      { property: "og:site_name", content: "CS2Hideout" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+    ],
+    scripts: [
       {
-        rel: "stylesheet",
-        href: appCss,
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "CS2Hideout",
+          description: "Hideout marketplace for CS2 traders — Southeast Asia & worldwide. Zero fees.",
+          url: "/",
+        }),
       },
     ],
   }),
@@ -99,6 +107,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
+
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
