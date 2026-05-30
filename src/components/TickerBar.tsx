@@ -46,17 +46,19 @@ export function TickerBar() {
                      -rotate-12 opacity-90 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
         />
       )}
-      {/* Karambit right */}
-      {KARAMBIT_DOPPLER && (
+      {/* CS2 Hideout logo right */}
+      <div
+        aria-hidden
+        className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 items-center justify-center pointer-events-none select-none"
+      >
+        <span className="absolute h-20 w-20 rounded-full bg-amber/30 blur-2xl animate-pulse" />
         <img
-          src={KARAMBIT_DOPPLER}
-          alt=""
-          aria-hidden
-          className="hidden sm:block absolute -right-4 top-1/2 -translate-y-1/2 h-16 w-auto
-                     object-contain pointer-events-none select-none
-                     rotate-12 opacity-90 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
+          src={hideoutLogo}
+          alt="CS2 Hideout"
+          className="relative h-16 w-16 object-contain drop-shadow-[0_0_14px_rgba(255,140,40,0.55)]
+                     transition-transform duration-500 hover:scale-110 hover:rotate-2"
         />
-      )}
+      </div>
 
       {/* Fade masks on the edges */}
       <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-background to-transparent z-10" />
