@@ -32,7 +32,7 @@ export const Route = createFileRoute("/market/$id")({
 });
 
 function SkinDetail() {
-  const { skin } = Route.useLoaderData();
+  const { skin } = Route.useLoaderData() as { skin: Skin };
   const lt = skin.listingType;
   const similar = SKINS.filter((s) => s.id !== skin.id && s.weapon === skin.weapon).slice(0, 4);
 
