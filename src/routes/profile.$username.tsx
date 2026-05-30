@@ -6,9 +6,20 @@ import { Star, Crown } from "lucide-react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/profile/$username")({
-  head: () => ({ meta: [{ title: "Profile — CS2Hideout" }] }),
+  head: ({ params }) => ({
+    meta: [
+      { title: `${params.username} — CS2Hideout Trader` },
+      { name: "description", content: `View ${params.username}'s active CS2 listings, reputation, and trade history on CS2Hideout.` },
+      { property: "og:title", content: `${params.username} — CS2Hideout Trader` },
+      { property: "og:description", content: `Active CS2 listings & trade history for ${params.username}.` },
+      { property: "og:url", content: `/profile/${params.username}` },
+      { property: "og:type", content: "profile" },
+    ],
+    links: [{ rel: "canonical", href: `/profile/${params.username}` }],
+  }),
   component: Profile,
 });
+
 
 function Profile() {
   const { username } = Route.useParams();

@@ -12,10 +12,56 @@ export const Route = createFileRoute("/market/$id")({
     if (!skin) throw notFound();
     return { skin };
   },
+  head: ({ params, loaderData }) => {
+    const skin = loaderData?.skin;
+    if (!skin) {
+      return {
+        meta: [
+          { title: "Listing not found — CS2Hideout" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
+    }
+    const itemName = `${skin.weapon} | ${skin.name} (${WEAR_LABEL[skin.wear]})${skin.stattrak ? " StatTrak™" : ""}`;
+    const desc = skin.priceThb
+      ? `${itemName} for ฿${skin.priceThb.toLocaleString()} from ${skin.seller.username} on CS2Hideout. Zero fees, direct Steam trade.`
+      : `${itemName} — open to trade for ${skin.desiredItem ?? "offers"}. Listed by ${skin.seller.username} on CS2Hideout.`;
+    return {
+      meta: [
+        { title: `${itemName} — CS2Hideout` },
+        { name: "description", content: desc },
+        { property: "og:title", content: `${itemName} — CS2Hideout` },
+        { property: "og:description", content: desc },
+        { property: "og:url", content: `/market/${params.id}` },
+        { property: "og:type", content: "product" },
+      ],
+      links: [{ rel: "canonical", href: `/market/${params.id}` }],
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: itemName,
+          description: desc,
+          brand: { "@type": "Brand", name: "Valve" },
+          ...(skin.priceThb && {
+            offers: {
+              "@type": "Offer",
+              priceCurrency: "THB",
+              price: skin.priceThb,
+              availability: "https://schema.org/InStock",
+              seller: { "@type": "Person", name: skin.seller.username },
+            },
+          }),
+        }),
+      }],
+    };
+  },
   notFoundComponent: () => <NotFound />,
   errorComponent: ({ error }) => <ErrBoundary message={error.message} />,
   component: SkinDetail,
 });
+
 
 function NotFound() {
   const { t } = useI18n();

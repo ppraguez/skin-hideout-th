@@ -11,10 +11,15 @@ export const Route = createFileRoute("/market")({
     meta: [
       { title: "Marketplace — CS2Hideout" },
       { name: "description", content: "Browse CS2 skin listings across SEA. Sell, trade, or both. Zero fees." },
+      { property: "og:title", content: "CS2 Skin Marketplace — CS2Hideout" },
+      { property: "og:description", content: "Browse CS2 skin listings across SEA & worldwide. Sell, trade, or both. Zero fees." },
+      { property: "og:url", content: "/market" },
     ],
+    links: [{ rel: "canonical", href: "/market" }],
   }),
   component: MarketPage,
 });
+
 
 // Wear codes and weapon types always stay English
 const WEARS = ["FN", "MW", "FT", "WW", "BS"] as const;
@@ -143,9 +148,10 @@ function MarketPage() {
               <div className="text-sm text-muted-foreground mt-1">{t("market.emptySub")}</div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5">
+            <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5 reveal-stagger">
               {filtered.map((s) => <SkinCard key={s.id} skin={s} />)}
             </div>
+
           )}
         </div>
       </div>

@@ -4,9 +4,19 @@ import { Crown, Check } from "lucide-react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/premium")({
-  head: () => ({ meta: [{ title: "Premium — CS2Hideout" }, { name: "description", content: "Unlock real-time alerts, early listings, advanced filters and more." }] }),
+  head: () => ({
+    meta: [
+      { title: "Premium — CS2Hideout" },
+      { name: "description", content: "Unlock real-time alerts, early listings, advanced filters and more." },
+      { property: "og:title", content: "CS2Hideout Premium — Smarter Trading" },
+      { property: "og:description", content: "Real-time alerts, early listings, advanced filters. Founders pricing." },
+      { property: "og:url", content: "/premium" },
+    ],
+    links: [{ rel: "canonical", href: "/premium" }],
+  }),
   component: Premium,
 });
+
 
 function Premium() {
   const { t, tArray } = useI18n();

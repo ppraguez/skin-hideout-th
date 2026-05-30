@@ -5,9 +5,19 @@ import { MATCHES } from "@/lib/mock-data";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/matches")({
-  head: () => ({ meta: [{ title: "Match Hub — CS2Hideout" }, { name: "description", content: "Live, upcoming, and completed CS2 matches — Bangkok time." }] }),
+  head: () => ({
+    meta: [
+      { title: "Match Hub — CS2Hideout" },
+      { name: "description", content: "Live, upcoming, and completed CS2 matches — Bangkok time." },
+      { property: "og:title", content: "CS2 Match Hub — CS2Hideout" },
+      { property: "og:description", content: "Live, upcoming, and completed CS2 matches in Bangkok time." },
+      { property: "og:url", content: "/matches" },
+    ],
+    links: [{ rel: "canonical", href: "/matches" }],
+  }),
   component: Matches,
 });
+
 
 function Matches() {
   const [tab, setTab] = useState<"live" | "upcoming" | "done">("upcoming");
