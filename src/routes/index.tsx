@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
 import { SteamLoginButton } from "@/components/SteamLoginButton";
 import { SKINS, POSTS } from "@/lib/mock-data";
-import { Flame, ArrowRight, MessageCircle, Heart } from "lucide-react";
+import { Flame, ArrowRight, MessageCircle, Heart, Zap, CheckCircle2 } from "lucide-react";
 import { TickerBar } from "@/components/TickerBar";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { getMatches, type LiveMatch, type MatchTeam } from "@/lib/matches.functions";
@@ -41,11 +41,41 @@ function Home() {
   return (
     <AppLayout>
       <Hero />
+      <QuickBuyStrip />
       <HotDeals />
       <CommunityPreview />
       <MatchesPreview />
       <Footer />
     </AppLayout>
+  );
+}
+
+function QuickBuyStrip() {
+  const { t } = useI18n();
+  return (
+    <section className="mb-12">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-surface/70 border-l-4 border-l-primary p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center gap-5">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start gap-3">
+            <Zap className="h-6 w-6 text-primary shrink-0 mt-0.5" />
+            <p className="text-sm sm:text-base font-medium text-foreground/90">
+              {t("quickBuy.homeStrip")}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 mt-3 pl-9 text-[11px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-success" />{t("quickBuy.badgePay")}</span>
+            <span className="inline-flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-success" />{t("quickBuy.badgeFees")}</span>
+            <span className="inline-flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-success" />{t("quickBuy.badgeSafe")}</span>
+          </div>
+        </div>
+        <Link
+          to="/quick-buy"
+          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:brightness-110 transition whitespace-nowrap"
+        >
+          {t("quickBuy.homeCta")} <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+    </section>
   );
 }
 
