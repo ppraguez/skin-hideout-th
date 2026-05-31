@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
+import { SteamLoginButton } from "@/components/SteamLoginButton";
 import { SKINS, POSTS, MATCHES } from "@/lib/mock-data";
 import { Flame, ArrowRight, MessageCircle, Heart } from "lucide-react";
 import { TickerBar } from "@/components/TickerBar";
