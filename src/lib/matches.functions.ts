@@ -250,13 +250,14 @@ export const getMatchDetail = createServerFn({ method: "GET" })
     try {
       // Some PandaScore plans block GET /csgo/matches/:id but still allow the
       // list endpoint with a filter — try the direct route first, then fall back.
+      // Brackets must be URL-encoded for the Workers fetch parser.
       let m: PandaMatch;
       try {
         m = await pandaFetch<PandaMatch>(`/csgo/matches/${data.id}`, key);
       } catch (e) {
         if (e instanceof Error && /\b403\b/.test(e.message)) {
           const list = await pandaFetch<PandaMatch[]>(
-            `/csgo/matches?filter[id]=${data.id}&per_page=1`,
+            `/csgo/matches?filter%5Bid%5D=${data.id}&per_page=1`,
             key,
           );
           if (!list.length) throw e;
@@ -268,7 +269,7 @@ export const getMatchDetail = createServerFn({ method: "GET" })
       const status = statusFromPanda(m.status);
       const base = mapMatch(m, status);
 
-      // Dedicated player-stats endpoint
+      // Dedicated player-stats endpoint (often blocked on lower tiers)
       let statsRows: PandaMatchPlayerStatsRow[] = [];
       try {
         const s = await pandaFetch<PandaMatchPlayersStatsResponse | PandaMatchPlayerStatsRow[]>(
@@ -296,6 +297,30 @@ export const getMatchDetail = createServerFn({ method: "GET" })
       for (const p of m.players ?? []) {
         if (!p.id) continue;
         if (!byId.has(p.id)) byId.set(p.id, { player: p, teamId: p.current_team?.id ?? null });
+      }
+
+      // Fallback for past/finished matches: rosters aren't embedded on the
+      // match payload, so fetch each team via the teams list endpoint.
+      if (byId.size === 0) {
+        const teamIds = [base.teamA.id, base.teamB.id].filter(
+          (x): x is number => typeof x === "number",
+        );
+        await Promise.all(
+          teamIds.map(async (tid) => {
+            try {
+              const arr = await pandaFetch<TeamWithPlayers[]>(
+                `/csgo/teams?filter%5Bid%5D=${tid}&per_page=1`,
+                key,
+              );
+              for (const p of arr[0]?.players ?? []) {
+                if (!p.id) continue;
+                byId.set(p.id, { player: p, teamId: tid });
+              }
+            } catch (e) {
+              console.warn(`PandaScore team ${tid} fetch failed`, e);
+            }
+          }),
+        );
       }
 
       const teamKills = new Map<number, number>();
