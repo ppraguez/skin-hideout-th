@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo, type FormEvent } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -12,13 +12,15 @@ import {
   Shield,
   TrendingUp,
   Wallet,
+  LogIn,
+  PackageOpen,
 } from "lucide-react";
 import {
-  getQuickBuyListings,
+  getMyInventoryQuotes,
   submitQuickBuyOffer,
-  type QuickBuyListing,
+  type InventoryQuote,
 } from "@/lib/quick-buy.functions";
-import { WEAR_LABEL, type Wear } from "@/lib/mock-data";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 export const Route = createFileRoute("/quick-buy")({
   head: () => ({
@@ -27,13 +29,13 @@ export const Route = createFileRoute("/quick-buy")({
       {
         name: "description",
         content:
-          "Sell your CS2 skins directly to us at a guaranteed price. Payment released after Steam Trade Protection expires.",
+          "Sign in with Steam, pick items from your inventory, and we'll quote a guaranteed buy price. Payment released after Steam Trade Protection expires.",
       },
       { property: "og:title", content: "Quick Buy — CS2Hideout" },
       {
         property: "og:description",
         content:
-          "Sell your CS2 skins directly to us at a guaranteed price. Payment released after Steam Trade Protection expires.",
+          "Sell skins from your Steam inventory at a guaranteed price quoted by us.",
       },
       { property: "og:url", content: "/quick-buy" },
     ],
@@ -52,29 +54,35 @@ export const Route = createFileRoute("/quick-buy")({
 
 function QuickBuyPage() {
   const { t, formatPrice } = useI18n();
+  const { data: user } = useCurrentUser();
   const [query, setQuery] = useState("");
   const [weaponFilter, setWeaponFilter] = useState<string>("all");
-  const [active, setActive] = useState<QuickBuyListing | null>(null);
+  const [active, setActive] = useState<InventoryQuote | null>(null);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["quick-buy-listings"],
-    queryFn: () => getQuickBuyListings(),
+  const inventoryQuery = useQuery({
+    queryKey: ["quick-buy-inventory", user?.steamid ?? "anon"],
+    queryFn: () => getMyInventoryQuotes(),
+    enabled: !!user,
     staleTime: 60_000,
   });
 
-  const listings = data?.listings ?? [];
+  const items = inventoryQuery.data?.items ?? [];
+  const totalQuote = useMemo(
+    () => items.reduce((sum, i) => sum + i.buy_price_thb, 0),
+    [items],
+  );
   const weapons = useMemo(
-    () => Array.from(new Set(listings.map((l) => l.weapon))).sort(),
-    [listings]
+    () => Array.from(new Set(items.map((i) => i.weapon))).sort(),
+    [items],
   );
 
-  const filtered = listings.filter((l) => {
-    if (weaponFilter !== "all" && l.weapon !== weaponFilter) return false;
+  const filtered = items.filter((i) => {
+    if (weaponFilter !== "all" && i.weapon !== weaponFilter) return false;
     if (query) {
       const q = query.toLowerCase();
       if (
-        !l.skin_name.toLowerCase().includes(q) &&
-        !l.weapon.toLowerCase().includes(q)
+        !i.skin_name.toLowerCase().includes(q) &&
+        !i.weapon.toLowerCase().includes(q)
       )
         return false;
     }
@@ -116,82 +124,89 @@ function QuickBuyPage() {
           {t("quickBuy.howTitle")}
         </h2>
         <div className="grid md:grid-cols-3 gap-4">
-          <Step
-            n={1}
-            title={t("quickBuy.step1Title")}
-            body={t("quickBuy.step1Body")}
-          />
-          <Step
-            n={2}
-            title={t("quickBuy.step2Title")}
-            body={t("quickBuy.step2Body")}
-          />
-          <Step
-            n={3}
-            title={t("quickBuy.step3Title")}
-            body={t("quickBuy.step3Body")}
-          />
+          <Step n={1} title={t("quickBuy.step1Title")} body={t("quickBuy.step1Body")} />
+          <Step n={2} title={t("quickBuy.step2Title")} body={t("quickBuy.step2Body")} />
+          <Step n={3} title={t("quickBuy.step3Title")} body={t("quickBuy.step3Body")} />
         </div>
         <div className="mt-4 flex gap-3 items-start rounded-2xl border border-primary/30 bg-primary/5 p-4">
           <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-          <p className="text-sm text-foreground/90">
-            {t("quickBuy.protectionInfo")}
-          </p>
+          <p className="text-sm text-foreground/90">{t("quickBuy.protectionInfo")}</p>
         </div>
       </section>
 
-      {/* Listings */}
+      {/* Inventory */}
       <section className="mb-16">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold">
-            {t("quickBuy.buyingTitle")}
-          </h2>
-          <div className="flex gap-2 flex-wrap">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t("quickBuy.searchPlaceholder")}
-                className="pl-9 pr-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 min-w-[220px]"
-              />
-            </div>
-            <select
-              value={weaponFilter}
-              onChange={(e) => setWeaponFilter(e.target.value)}
-              className="px-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 font-semibold"
-            >
-              <option value="all">{t("quickBuy.allWeapons")}</option>
-              {weapons.map((w) => (
-                <option key={w} value={w}>
-                  {w}
-                </option>
-              ))}
-            </select>
+          <div>
+            <h2 className="font-display text-2xl sm:text-3xl font-bold">
+              {t("quickBuy.inventoryTitle")}
+            </h2>
+            {user && items.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {t("quickBuy.inventorySub", {
+                  count: items.length,
+                  total: formatPrice(totalQuote),
+                })}
+              </p>
+            )}
           </div>
+          {user && items.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t("quickBuy.searchPlaceholder")}
+                  className="pl-9 pr-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 min-w-[220px]"
+                />
+              </div>
+              <select
+                value={weaponFilter}
+                onChange={(e) => setWeaponFilter(e.target.value)}
+                className="px-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 font-semibold"
+              >
+                <option value="all">{t("quickBuy.allWeapons")}</option>
+                {weapons.map((w) => (
+                  <option key={w} value={w}>
+                    {w}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
-        {isLoading ? (
+        {!user ? (
+          <SignInPrompt />
+        ) : inventoryQuery.isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="glass-card rounded-2xl h-72 animate-pulse"
-              />
+              <div key={i} className="glass-card rounded-2xl h-72 animate-pulse" />
             ))}
           </div>
+        ) : inventoryQuery.isError ? (
+          <div className="glass-card rounded-2xl p-8 text-center text-sm text-muted-foreground">
+            {t("quickBuy.inventoryError")}
+            <div className="text-xs mt-2 opacity-70">
+              {(inventoryQuery.error as Error).message}
+            </div>
+          </div>
+        ) : items.length === 0 ? (
+          <EmptyInventory minValue={inventoryQuery.data?.minValueThb ?? 200} />
         ) : filtered.length === 0 ? (
           <div className="glass-card rounded-2xl p-10 text-center text-sm text-muted-foreground">
-            {t("quickBuy.emptyList")}
+            {t("quickBuy.noMatches")}
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 reveal-stagger">
-            {filtered.map((l) => (
-              <BuyCard
-                key={l.id}
-                listing={l}
-                onClick={() => setActive(l)}
-                priceLabel={formatPrice(l.buy_price_thb)}
+            {filtered.map((i) => (
+              <InventoryCard
+                key={i.asset_id}
+                item={i}
+                onClick={() => setActive(i)}
+                priceLabel={formatPrice(i.buy_price_thb)}
+                marketLabel={formatPrice(i.market_price_thb)}
               />
             ))}
           </div>
@@ -204,28 +219,56 @@ function QuickBuyPage() {
           {t("quickBuy.whyTitle")}
         </h2>
         <div className="grid md:grid-cols-3 gap-4">
-          <WhyCard
-            icon={<TrendingUp className="h-5 w-5" />}
-            title={t("quickBuy.whyFairTitle")}
-            body={t("quickBuy.whyFairBody")}
-          />
-          <WhyCard
-            icon={<Shield className="h-5 w-5" />}
-            title={t("quickBuy.whySafeTitle")}
-            body={t("quickBuy.whySafeBody")}
-          />
-          <WhyCard
-            icon={<Wallet className="h-5 w-5" />}
-            title={t("quickBuy.whyPayTitle")}
-            body={t("quickBuy.whyPayBody")}
-          />
+          <WhyCard icon={<TrendingUp className="h-5 w-5" />} title={t("quickBuy.whyFairTitle")} body={t("quickBuy.whyFairBody")} />
+          <WhyCard icon={<Shield className="h-5 w-5" />} title={t("quickBuy.whySafeTitle")} body={t("quickBuy.whySafeBody")} />
+          <WhyCard icon={<Wallet className="h-5 w-5" />} title={t("quickBuy.whyPayTitle")} body={t("quickBuy.whyPayBody")} />
         </div>
       </section>
 
-      {active && (
-        <SubmitPanel listing={active} onClose={() => setActive(null)} />
-      )}
+      {active && <SubmitPanel item={active} onClose={() => setActive(null)} />}
     </AppLayout>
+  );
+}
+
+function SignInPrompt() {
+  const { t } = useI18n();
+  return (
+    <div className="glass-card rounded-2xl p-10 text-center">
+      <LogIn className="h-10 w-10 text-primary mx-auto mb-4" />
+      <h3 className="font-display text-xl font-bold mb-2">
+        {t("quickBuy.signInTitle")}
+      </h3>
+      <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+        {t("quickBuy.signInBody")}
+      </p>
+      <a
+        href="/api/auth/steam"
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:brightness-110 transition"
+      >
+        <LogIn className="h-4 w-4" /> {t("quickBuy.signInCta")}
+      </a>
+    </div>
+  );
+}
+
+function EmptyInventory({ minValue }: { minValue: number }) {
+  const { t, formatPrice } = useI18n();
+  return (
+    <div className="glass-card rounded-2xl p-10 text-center">
+      <PackageOpen className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
+      <h3 className="font-display text-lg font-bold mb-1">
+        {t("quickBuy.emptyTitle")}
+      </h3>
+      <p className="text-sm text-muted-foreground max-w-md mx-auto">
+        {t("quickBuy.emptyBody", { min: formatPrice(minValue) })}
+      </p>
+      <Link
+        to="/market"
+        className="inline-block mt-5 text-sm text-primary hover:underline"
+      >
+        {t("quickBuy.browseMarket")} →
+      </Link>
+    </div>
   );
 }
 
@@ -270,60 +313,66 @@ function WhyCard({
   );
 }
 
-function BuyCard({
-  listing,
+function InventoryCard({
+  item,
   onClick,
   priceLabel,
+  marketLabel,
 }: {
-  listing: QuickBuyListing;
+  item: InventoryQuote;
   onClick: () => void;
   priceLabel: string;
+  marketLabel: string;
 }) {
   const { t } = useI18n();
-  const wearLabel =
-    WEAR_LABEL[listing.wear as Wear] ?? listing.wear;
   return (
     <div className="glass-card rounded-2xl overflow-hidden flex flex-col group hover:glow-border transition">
       <div className="skin-thumb relative aspect-[5/4] flex items-center justify-center">
-        {listing.image_url ? (
+        {item.image_url ? (
           <img
-            src={listing.image_url}
-            alt={`${listing.weapon} | ${listing.skin_name}`}
+            src={item.image_url}
+            alt={item.market_hash_name}
             loading="lazy"
             className="max-h-[85%] max-w-[85%] object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)]"
           />
         ) : (
           <div className="text-center px-4">
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              {listing.weapon}
+              {item.weapon}
             </div>
             <div className="font-display text-xl font-bold mt-1">
-              {listing.skin_name}
+              {item.skin_name}
             </div>
           </div>
         )}
         <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded border border-primary/40 bg-background/70 text-primary uppercase tracking-wider">
-          {wearLabel}
+          {item.wear}
         </span>
-        {listing.stattrak_accepted && (
+        {item.stattrak && (
           <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded border border-amber/50 bg-background/70 text-amber">
-            {t("quickBuy.stattrakOk")}
+            StatTrak™
+          </span>
+        )}
+        {item.souvenir && (
+          <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded border border-amber/50 bg-background/70 text-amber">
+            Souvenir
           </span>
         )}
       </div>
       <div className="p-4 flex flex-col gap-2 flex-1">
         <div>
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            {listing.weapon}
+            {item.weapon}
           </div>
           <div className="font-display font-bold text-base truncate">
-            {listing.skin_name}
+            {item.skin_name}
           </div>
         </div>
-        <div className="text-[11px] font-mono text-muted-foreground">
-          {t("quickBuy.floatRange")}: {listing.min_float.toFixed(2)} —{" "}
-          {listing.max_float.toFixed(2)}
-        </div>
+        {item.float_value !== null && (
+          <div className="text-[11px] font-mono text-muted-foreground">
+            Float: {item.float_value.toFixed(4)}
+          </div>
+        )}
         <div className="mt-1">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
             {t("quickBuy.ourBuyPrice")}
@@ -332,51 +381,58 @@ function BuyCard({
             {priceLabel}
           </div>
           <div className="text-[11px] text-muted-foreground mt-0.5">
-            {t("quickBuy.marketPct", { pct: listing.market_percentage })}
+            {t("quickBuy.marketPct", { pct: item.market_percentage })} · {marketLabel}
           </div>
         </div>
         <button
           onClick={onClick}
-          className="mt-2 w-full py-2.5 rounded-lg border border-primary/60 text-primary text-sm font-semibold hover:bg-primary/10 transition"
+          className="mt-2 w-full py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:brightness-110 transition"
         >
-          {t("quickBuy.iHaveThis")}
+          {t("quickBuy.sellThis")}
         </button>
       </div>
     </div>
   );
 }
 
+const inputCls =
+  "w-full px-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40";
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1.5">
+        {label}
+      </span>
+      {children}
+    </label>
+  );
+}
+
 function SubmitPanel({
-  listing,
+  item,
   onClose,
 }: {
-  listing: QuickBuyListing;
+  item: InventoryQuote;
   onClose: () => void;
 }) {
-  const { t } = useI18n();
-  const [form, setForm] = useState({
-    skin_name: `${listing.weapon} | ${listing.skin_name}`,
-    wear: listing.wear as Wear,
-    float_value: "",
-    stattrak: false,
-    inspect_link: "",
-    contact_method: "",
-    notes: "",
-  });
+  const { t, formatPrice } = useI18n();
+  const [contact, setContact] = useState("");
+  const [notes, setNotes] = useState("");
   const [done, setDone] = useState(false);
 
   const mutation = useMutation({
     mutationFn: () =>
       submitQuickBuyOffer({
         data: {
-          listing_id: listing.id,
-          skin_name: form.skin_name,
-          wear: form.wear,
-          float_value: form.float_value ? Number(form.float_value) : null,
-          stattrak: form.stattrak,
-          inspect_link: form.inspect_link || undefined,
-          contact_method: form.contact_method,
-          notes: form.notes || undefined,
+          asset_id: item.asset_id,
+          market_hash_name: item.market_hash_name,
+          wear: item.wear,
+          float_value: item.float_value,
+          stattrak: item.stattrak,
+          quoted_price_thb: item.buy_price_thb,
+          contact_method: contact,
+          notes: notes || undefined,
         },
       }),
     onSuccess: () => setDone(true),
@@ -411,9 +467,31 @@ function SubmitPanel({
             {t("quickBuy.heroTitle")}
           </span>
         </div>
-        <h2 className="font-display text-2xl font-bold mb-1">
-          {t("quickBuy.submitTitle")}
+        <h2 className="font-display text-2xl font-bold">
+          {t("quickBuy.confirmTitle")}
         </h2>
+
+        {/* Item summary */}
+        <div className="mt-4 flex gap-3 p-3 rounded-xl border border-border bg-surface-elevated/50">
+          {item.image_url && (
+            <img
+              src={item.image_url}
+              alt=""
+              className="h-16 w-16 object-contain shrink-0"
+            />
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {item.weapon} · {item.wear}
+            </div>
+            <div className="font-display font-bold truncate">
+              {item.skin_name}
+            </div>
+            <div className="font-mono text-lg font-bold text-primary tabular-nums">
+              {formatPrice(item.buy_price_thb)}
+            </div>
+          </div>
+        </div>
 
         {done ? (
           <div className="mt-6 rounded-2xl border border-success/40 bg-success/10 p-5 text-sm">
@@ -428,127 +506,43 @@ function SubmitPanel({
           </div>
         ) : (
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
-            <Field label={t("quickBuy.submitSkin")}>
-              <input
-                required
-                value={form.skin_name}
-                onChange={(e) =>
-                  setForm({ ...form, skin_name: e.target.value })
-                }
-                className={inputCls}
-              />
-            </Field>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label={t("quickBuy.submitWear")}>
-                <select
-                  value={form.wear}
-                  onChange={(e) =>
-                    setForm({ ...form, wear: e.target.value as Wear })
-                  }
-                  className={inputCls}
-                >
-                  {(Object.keys(WEAR_LABEL) as Wear[]).map((w) => (
-                    <option key={w} value={w}>
-                      {WEAR_LABEL[w]}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label={t("quickBuy.submitFloat")}>
-                <input
-                  type="number"
-                  step="0.0001"
-                  min="0"
-                  max="1"
-                  value={form.float_value}
-                  onChange={(e) =>
-                    setForm({ ...form, float_value: e.target.value })
-                  }
-                  className={`${inputCls} font-mono`}
-                  placeholder="0.1234"
-                />
-              </Field>
-            </div>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={form.stattrak}
-                onChange={(e) =>
-                  setForm({ ...form, stattrak: e.target.checked })
-                }
-                className="h-4 w-4 accent-[color:var(--primary)]"
-              />
-              {t("quickBuy.submitStattrak")}
-            </label>
-            <Field label={t("quickBuy.submitInspect")}>
-              <input
-                type="url"
-                value={form.inspect_link}
-                onChange={(e) =>
-                  setForm({ ...form, inspect_link: e.target.value })
-                }
-                placeholder="steam://rungame/..."
-                className={inputCls}
-              />
-            </Field>
             <Field label={t("quickBuy.submitContact")}>
               <input
                 required
-                value={form.contact_method}
-                onChange={(e) =>
-                  setForm({ ...form, contact_method: e.target.value })
-                }
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
                 className={inputCls}
+                placeholder="Steam / Discord / LINE"
               />
             </Field>
             <Field label={t("quickBuy.submitNotes")}>
               <textarea
-                value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
                 rows={3}
                 className={inputCls}
               />
             </Field>
-
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-xs text-foreground/80">
+              {t("quickBuy.protectionInfo")}
+            </div>
             {mutation.isError && (
-              <p className="text-xs text-destructive">
-                {t("quickBuy.submitError")}
+              <p className="text-sm text-destructive">
+                {(mutation.error as Error).message}
               </p>
             )}
-
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold glow-border hover:brightness-110 transition disabled:opacity-60"
+              className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold disabled:opacity-50"
             >
-              {mutation.isPending ? "..." : t("quickBuy.submitBtn")}
+              {mutation.isPending
+                ? t("quickBuy.submitting")
+                : t("quickBuy.submitCta")}
             </button>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              {t("quickBuy.submitDisclaimer")}
-            </p>
           </form>
         )}
       </div>
     </div>
-  );
-}
-
-const inputCls =
-  "w-full px-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40";
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="block">
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
-        {label}
-      </div>
-      {children}
-    </label>
   );
 }
