@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
+import { SteamLoginButton } from "@/components/SteamLoginButton";
 import { SKINS, POSTS, MATCHES } from "@/lib/mock-data";
 import { Flame, ArrowRight, MessageCircle, Heart } from "lucide-react";
 import { TickerBar } from "@/components/TickerBar";
@@ -66,14 +67,9 @@ function Hero() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <a
-            href="/api/auth/steam"
-            target="_top"
-            rel="noopener"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-border hover:brightness-110 transition"
-          >
+          <SteamLoginButton className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-border hover:brightness-110 transition">
             {t("home.ctaConnect")}
-          </a>
+          </SteamLoginButton>
           <Link
             to="/market"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-surface/70 backdrop-blur font-semibold text-sm hover:border-primary/60 transition"
