@@ -148,8 +148,7 @@ function Matches() {
   );
 }
 
-const dtf = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "Asia/Bangkok",
+const dtf = new Intl.DateTimeFormat(undefined, {
   weekday: "short",
   day: "2-digit",
   month: "short",
@@ -165,31 +164,29 @@ function formatBangkok(iso: string | null): string {
   return dtf.format(d);
 }
 
-const bkkDayFmt = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Asia/Bangkok",
+const dayKeyFmt = new Intl.DateTimeFormat("en-CA", {
   year: "numeric",
   month: "2-digit",
   day: "2-digit",
 });
-const bkkLabelFmt = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "Asia/Bangkok",
+const dayLabelFmt = new Intl.DateTimeFormat(undefined, {
   weekday: "long",
   day: "2-digit",
   month: "short",
 });
 
-function bkkDayKey(d: Date): string {
-  return bkkDayFmt.format(d); // YYYY-MM-DD
+function localDayKey(d: Date): string {
+  return dayKeyFmt.format(d); // YYYY-MM-DD in user's local timezone
 }
 
 function groupByDay(items: LiveMatch[]): { key: string; label: string; items: LiveMatch[] }[] {
-  const today = bkkDayKey(new Date());
-  const yesterday = bkkDayKey(new Date(Date.now() - 86_400_000));
+  const today = localDayKey(new Date());
+  const yesterday = localDayKey(new Date(Date.now() - 86_400_000));
   const groups = new Map<string, LiveMatch[]>();
   for (const m of items) {
     const iso = m.beginAt ?? m.scheduledAt;
     const d = iso ? new Date(iso) : null;
-    const key = d && !isNaN(d.getTime()) ? bkkDayKey(d) : "unknown";
+    const key = d && !isNaN(d.getTime()) ? localDayKey(d) : "unknown";
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(m);
   }
@@ -199,7 +196,7 @@ function groupByDay(items: LiveMatch[]): { key: string; label: string; items: Li
     if (key === today) label = "Today";
     else if (key === yesterday) label = "Yesterday";
     else if (key === "unknown") label = "Date unknown";
-    else label = bkkLabelFmt.format(new Date(`${key}T00:00:00+07:00`));
+    else label = dayLabelFmt.format(new Date(`${key}T00:00:00`));
     return { key, label, items: groups.get(key)! };
   });
 }
