@@ -83,6 +83,8 @@ export function Sidebar() {
         ) : (
           <a
             href="/api/auth/steam"
+            target="_top"
+            rel="noopener"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-elevated transition-colors"
           >
             <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/40 to-amber/30 border border-border flex items-center justify-center">
