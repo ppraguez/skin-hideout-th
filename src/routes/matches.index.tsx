@@ -39,8 +39,13 @@ function Matches() {
     return t("matches.tabResults");
   };
 
-  const matches = data?.matches ?? [];
   const apiError = data?.error;
+  const matches = [...(data?.matches ?? [])].sort((a, b) => {
+    const ta = new Date(a.beginAt ?? a.scheduledAt ?? 0).getTime() || 0;
+    const tb = new Date(b.beginAt ?? b.scheduledAt ?? 0).getTime() || 0;
+    // Past results: newest first. Upcoming/live: soonest first.
+    return tab === "done" ? tb - ta : ta - tb;
+  });
 
   return (
     <AppLayout>
