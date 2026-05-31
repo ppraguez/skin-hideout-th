@@ -64,12 +64,12 @@ function Matches() {
   const matches = [...(data?.matches ?? [])].sort((a, b) => {
     const ta = new Date(a.beginAt ?? a.scheduledAt ?? 0).getTime() || 0;
     const tb = new Date(b.beginAt ?? b.scheduledAt ?? 0).getTime() || 0;
-    if (effectiveSort === "tier") {
+    if (sort === "tier") {
       const diff = tierRank(a.tier) - tierRank(b.tier);
       if (diff !== 0) return diff;
       return tab === "done" ? tb - ta : ta - tb;
     }
-    return effectiveSort === "date-desc" ? tb - ta : ta - tb;
+    return sort === "date-desc" ? tb - ta : ta - tb;
   });
 
   return (
@@ -98,7 +98,7 @@ function Matches() {
           </label>
           <select
             id="match-sort"
-            value={effectiveSort}
+            value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
             className="px-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
           >
