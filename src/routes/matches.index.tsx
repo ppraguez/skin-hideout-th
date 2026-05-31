@@ -121,6 +121,45 @@ function formatBangkok(iso: string | null): string {
   return dtf.format(d);
 }
 
+const bkkDayFmt = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Bangkok",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+const bkkLabelFmt = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Bangkok",
+  weekday: "long",
+  day: "2-digit",
+  month: "short",
+});
+
+function bkkDayKey(d: Date): string {
+  return bkkDayFmt.format(d); // YYYY-MM-DD
+}
+
+function groupByDay(items: LiveMatch[]): { key: string; label: string; items: LiveMatch[] }[] {
+  const today = bkkDayKey(new Date());
+  const yesterday = bkkDayKey(new Date(Date.now() - 86_400_000));
+  const groups = new Map<string, LiveMatch[]>();
+  for (const m of items) {
+    const iso = m.beginAt ?? m.scheduledAt;
+    const d = iso ? new Date(iso) : null;
+    const key = d && !isNaN(d.getTime()) ? bkkDayKey(d) : "unknown";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(m);
+  }
+  const keys = Array.from(groups.keys()).sort((a, b) => (a < b ? 1 : a > b ? -1 : 0));
+  return keys.map((key) => {
+    let label: string;
+    if (key === today) label = "Today";
+    else if (key === yesterday) label = "Yesterday";
+    else if (key === "unknown") label = "Date unknown";
+    else label = bkkLabelFmt.format(new Date(`${key}T00:00:00+07:00`));
+    return { key, label, items: groups.get(key)! };
+  });
+}
+
 function countdown(iso: string | null): string | null {
   if (!iso) return null;
   const ms = new Date(iso).getTime() - Date.now();
