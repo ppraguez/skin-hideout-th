@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import { useState } from "react";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { MATCHES } from "@/lib/mock-data";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import { getMatches, type LiveMatch, type MatchStatus } from "@/lib/matches.functions";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
@@ -16,19 +17,30 @@ export const Route = createFileRoute("/matches")({
     links: [{ rel: "canonical", href: "/matches" }],
   }),
   component: Matches,
+  errorComponent: ({ error }) => <ErrorComponent error={error} />,
 });
 
+const matchesQuery = (status: MatchStatus) =>
+  queryOptions({
+    queryKey: ["matches", status],
+    queryFn: () => getMatches({ data: { status } }),
+    refetchInterval: status === "live" ? 30_000 : 120_000,
+    staleTime: 15_000,
+  });
 
 function Matches() {
-  const [tab, setTab] = useState<"live" | "upcoming" | "done">("upcoming");
-  const filtered = MATCHES.filter((m) => m.status === tab);
-  const { t, formatTime } = useI18n();
+  const [tab, setTab] = useState<MatchStatus>("live");
+  const { t } = useI18n();
+  const { data, isLoading, isError } = useQuery(matchesQuery(tab));
 
-  const tabLabel = (key: typeof tab) => {
+  const tabLabel = (key: MatchStatus) => {
     if (key === "live") return t("matches.tabLive");
     if (key === "upcoming") return t("matches.tabUpcoming");
     return t("matches.tabResults");
   };
+
+  const matches = data?.matches ?? [];
+  const apiError = data?.error;
 
   return (
     <AppLayout>
@@ -50,32 +62,83 @@ function Matches() {
       </div>
 
       <div className="mt-6 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="glass-card rounded-2xl p-6 animate-pulse h-44" />
+          ))
+        ) : isError || apiError ? (
+          <div className="glass-card rounded-2xl p-10 text-center md:col-span-2 xl:col-span-3">
+            <div className="text-3xl mb-2">⚠️</div>
+            <p className="text-sm text-muted-foreground">{apiError ?? "Failed to load matches"}</p>
+          </div>
+        ) : matches.length === 0 ? (
           <div className="glass-card rounded-2xl p-10 text-center md:col-span-2 xl:col-span-3">
             <div className="text-3xl mb-2">📺</div>
             <p className="text-sm text-muted-foreground">{t("matches.empty")}</p>
           </div>
-        ) : filtered.map((m) => (
-          <div key={m.id} className="glass-card rounded-2xl p-6 hover:glow-border transition">
-            <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground mb-5">
-              <span>{m.tournament}</span>
-              <span className="text-amber">{t("common.tierShort", { tier: m.tier })}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <Team name={m.teamA} score={m.scoreA} />
-              <span className="font-mono text-xs text-muted-foreground">{t("common.vs")}</span>
-              <Team name={m.teamB} score={m.scoreB} />
-            </div>
-            <div className="flex items-center justify-between mt-5 pt-4 border-t border-border text-xs">
-              <span className="text-muted-foreground">{formatTime(m.time)}</span>
-              {m.status === "live"
-                ? <span className="text-destructive font-bold flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" /> {t("common.live")}</span>
-                : <button className="text-primary hover:underline">{t("matches.viewMatch")}</button>}
-            </div>
-          </div>
-        ))}
+        ) : (
+          matches.map((m) => <MatchCard key={m.id} m={m} t={t} />)
+        )}
       </div>
     </AppLayout>
+  );
+}
+
+const tf = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Bangkok",
+  weekday: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+
+function formatBangkok(iso: string | null): string {
+  if (!iso) return "TBD";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "TBD";
+  return tf.format(d);
+}
+
+function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, string | number>) => string }) {
+  return (
+    <div className="glass-card rounded-2xl p-6 hover:glow-border transition">
+      <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground mb-5">
+        <span className="truncate pr-2">{m.tournament}</span>
+        <span className="text-amber whitespace-nowrap">{t("common.tierShort", { tier: m.tier })}</span>
+      </div>
+      <div className="flex items-center justify-between">
+        <Team name={m.teamA} score={m.scoreA} />
+        <span className="font-mono text-xs text-muted-foreground">{t("common.vs")}</span>
+        <Team name={m.teamB} score={m.scoreB} />
+      </div>
+      <div className="flex items-center justify-between mt-5 pt-4 border-t border-border text-xs">
+        <span className="text-muted-foreground">{formatBangkok(m.beginAt)}</span>
+        {m.status === "live" ? (
+          m.streamUrl ? (
+            <a
+              href={m.streamUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-destructive font-bold flex items-center gap-1 hover:underline"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
+              {t("common.live")}
+            </a>
+          ) : (
+            <span className="text-destructive font-bold flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
+              {t("common.live")}
+            </span>
+          )
+        ) : m.streamUrl ? (
+          <a href={m.streamUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+            {t("matches.viewMatch")}
+          </a>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -85,7 +148,7 @@ function Team({ name, score }: { name: string; score?: number }) {
       <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-surface-elevated to-surface border border-border flex items-center justify-center text-xs font-display font-bold">
         {name.slice(0, 3).toUpperCase()}
       </div>
-      <div className="text-sm font-semibold">{name}</div>
+      <div className="text-sm font-semibold text-center truncate w-full">{name}</div>
       {score !== undefined && <div className="font-mono text-lg font-bold text-primary">{score}</div>}
     </div>
   );
