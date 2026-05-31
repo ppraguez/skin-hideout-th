@@ -124,7 +124,11 @@ function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, s
   const viewers = formatViewers(m.liveViewers);
 
   return (
-    <div className="glass-card rounded-2xl p-5 hover:glow-border transition flex flex-col">
+    <Link
+      to="/matches/$matchId"
+      params={{ matchId: m.id }}
+      className="glass-card rounded-2xl p-5 hover:glow-border transition flex flex-col block"
+    >
       {/* League header */}
       <div className="flex items-center gap-2 mb-4">
         {m.leagueLogo ? (
