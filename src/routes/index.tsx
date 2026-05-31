@@ -52,8 +52,7 @@ function Hero() {
     <section className="relative overflow-hidden rounded-3xl border border-border bg-surface/60 noise-overlay px-6 sm:px-12 py-14 sm:py-20 mb-16">
       <div className="animated-mesh absolute inset-0 opacity-70" />
 
-
-
+      <HeroDecor />
 
       <div className="relative max-w-2xl reveal">
         <TickerBar />
@@ -95,6 +94,90 @@ function Hero() {
         </div>
       </div>
     </section>
+  );
+}
+
+function HeroDecor() {
+  const picks = [
+    SKINS.find((s) => s.id === "4"),  // Karambit Fade
+    SKINS.find((s) => s.id === "2"),  // AWP Asiimov
+    SKINS.find((s) => s.id === "1"),  // AK Redline
+  ].filter(Boolean) as typeof SKINS;
+
+  const layouts = [
+    { x: 40,  y: 30,  rot: -8, z: 10, w: 230 },
+    { x: 150, y: 130, rot: 4,  z: 20, w: 260 },
+    { x: 70,  y: 250, rot: -3, z: 15, w: 240 },
+  ];
+
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none hidden lg:block absolute right-4 xl:right-10 top-1/2 -translate-y-1/2 w-[440px] xl:w-[500px] h-[440px]"
+    >
+      <div className="absolute inset-0 rounded-full bg-primary/15 blur-3xl" />
+      <div className="absolute right-10 top-10 h-40 w-40 rounded-full bg-amber/20 blur-3xl" />
+
+      <div
+        className="absolute inset-0 opacity-[0.08]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+          maskImage: "radial-gradient(circle at center, black, transparent 70%)",
+          WebkitMaskImage: "radial-gradient(circle at center, black, transparent 70%)",
+        }}
+      />
+
+      {picks.map((s, i) => {
+        const l = layouts[i];
+        return (
+          <div
+            key={s.id}
+            className="absolute float-card glass-card rounded-2xl border border-border/70 overflow-hidden shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)]"
+            style={{
+              left: l.x,
+              top: l.y,
+              width: l.w,
+              transform: `rotate(${l.rot}deg)`,
+              zIndex: l.z,
+              animationDelay: `${i * 0.6}s`,
+            }}
+          >
+            <div className="relative aspect-[4/3] bg-gradient-to-br from-surface-elevated to-surface flex items-center justify-center">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(255,107,53,0.25),transparent_70%)]" />
+              {s.image && (
+                <img
+                  src={s.image}
+                  alt=""
+                  className="relative max-h-[80%] max-w-[85%] object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.55)]"
+                  loading="lazy"
+                />
+              )}
+              <span className="absolute top-2 left-2 text-[9px] font-bold px-1.5 py-0.5 rounded border border-primary/40 bg-primary/15 text-primary uppercase tracking-wider">
+                {s.wear}
+              </span>
+            </div>
+            <div className="px-3 py-2 flex items-center justify-between bg-surface/80 backdrop-blur">
+              <div className="min-w-0">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">{s.weapon}</div>
+                <div className="text-xs font-semibold truncate">{s.name}</div>
+              </div>
+              {s.priceUsd ? (
+                <div className="font-mono text-sm font-bold text-amber tabular-nums">${s.priceUsd}</div>
+              ) : (
+                <div className="text-[10px] font-bold text-primary uppercase">Trade</div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      <div className="absolute top-2 right-6 z-30 flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-destructive/40 bg-background/70 backdrop-blur">
+        <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
+        <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/90">Live Trades</span>
+      </div>
+    </div>
   );
 }
 
