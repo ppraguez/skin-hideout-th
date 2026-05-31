@@ -1,4 +1,4 @@
-import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -122,12 +122,20 @@ function formatViewers(n: number | null): string | null {
 function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, string | number>) => string }) {
   const cd = m.status === "upcoming" ? countdown(m.beginAt ?? m.scheduledAt) : null;
   const viewers = formatViewers(m.liveViewers);
+  const navigate = useNavigate();
 
   return (
-    <Link
-      to="/matches/$matchId"
-      params={{ matchId: m.id }}
-      className="glass-card rounded-2xl p-5 hover:glow-border transition flex flex-col block"
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={() => navigate({ to: "/matches/$matchId", params: { matchId: m.id } })}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          navigate({ to: "/matches/$matchId", params: { matchId: m.id } });
+        }
+      }}
+      className="glass-card rounded-2xl p-5 hover:glow-border transition flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/40"
     >
       {/* League header */}
       <div className="flex items-center gap-2 mb-4">
@@ -172,6 +180,7 @@ function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, s
               href={m.streamUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="text-destructive font-bold flex items-center gap-1 hover:underline whitespace-nowrap"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
@@ -184,14 +193,14 @@ function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, s
             </span>
           )
         ) : m.streamUrl ? (
-          <a href={m.streamUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline whitespace-nowrap">
+          <a href={m.streamUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-primary hover:underline whitespace-nowrap">
             {t("matches.viewMatch")}
           </a>
         ) : (
           <span className="text-muted-foreground">—</span>
         )}
       </div>
-    </Link>
+    </div>
   );
 }
 
