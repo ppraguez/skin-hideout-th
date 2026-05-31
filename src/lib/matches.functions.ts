@@ -22,7 +22,7 @@ const STATUS_TO_PANDA: Record<MatchStatus, string> = {
   done: "past",
 };
 
-type PandaOpponent = { opponent?: { name?: string } | null };
+type PandaOpponent = { opponent?: { id?: number; name?: string } | null };
 type PandaResult = { team_id?: number | null; score?: number };
 type PandaMatch = {
   id: number;
@@ -35,16 +35,25 @@ type PandaMatch = {
   serie?: { tier?: string | null } | null;
   opponents?: PandaOpponent[];
   results?: PandaResult[];
+  winner_id?: number | null;
   streams_list?: Array<{ raw_url?: string; main?: boolean; official?: boolean }>;
 };
 
+function scoreFor(teamId: number | undefined, results: PandaResult[] | undefined): number | undefined {
+  if (!teamId || !results) return undefined;
+  const r = results.find((x) => x.team_id === teamId);
+  return typeof r?.score === "number" ? r.score : undefined;
+}
+
 function mapMatch(m: PandaMatch, status: MatchStatus): LiveMatch {
-  const teamA = m.opponents?.[0]?.opponent?.name ?? "TBD";
-  const teamB = m.opponents?.[1]?.opponent?.name ?? "TBD";
+  const oppA = m.opponents?.[0]?.opponent ?? null;
+  const oppB = m.opponents?.[1]?.opponent ?? null;
+  const teamA = oppA?.name ?? "TBD";
+  const teamB = oppB?.name ?? "TBD";
   const tier = (m.tournament?.tier ?? m.serie?.tier ?? "?").toString().toUpperCase();
   const tournament = m.league?.name ?? m.tournament?.name ?? "—";
-  const scoreA = m.results?.[0]?.score;
-  const scoreB = m.results?.[1]?.score;
+  const scoreA = scoreFor(oppA?.id, m.results);
+  const scoreB = scoreFor(oppB?.id, m.results);
   const stream =
     m.streams_list?.find((s) => s.main || s.official)?.raw_url ??
     m.streams_list?.[0]?.raw_url ??
@@ -57,11 +66,12 @@ function mapMatch(m: PandaMatch, status: MatchStatus): LiveMatch {
     tier,
     beginAt: m.begin_at ?? m.scheduled_at ?? null,
     status,
-    scoreA: typeof scoreA === "number" ? scoreA : undefined,
-    scoreB: typeof scoreB === "number" ? scoreB : undefined,
+    scoreA,
+    scoreB,
     streamUrl: stream,
   };
 }
+
 
 export const getMatches = createServerFn({ method: "GET" })
   .inputValidator(
