@@ -105,9 +105,9 @@ function HeroDecor() {
   ].filter(Boolean) as typeof SKINS;
 
   const layouts = [
-    { x: 40,  y: 30,  rot: -8, z: 10, w: 230 },
-    { x: 150, y: 130, rot: 4,  z: 20, w: 260 },
-    { x: 70,  y: 250, rot: -3, z: 15, w: 240 },
+    { x: 40,  y: 30,  rot: -8, z: 10, w: 230, glow: "rgba(236, 72, 153, 0.35)" },  // Karambit Fade — magenta
+    { x: 150, y: 130, rot: 4,  z: 20, w: 260, glow: "rgba(255, 140, 60, 0.40)" },  // AWP Asiimov — orange
+    { x: 70,  y: 250, rot: -3, z: 15, w: 240, glow: "rgba(220, 38, 38, 0.35)" },   // AK Redline — red
   ];
 
   return (
@@ -141,11 +141,16 @@ function HeroDecor() {
               width: l.w,
               transform: `rotate(${l.rot}deg)`,
               zIndex: l.z,
-              animationDelay: `${i * 0.6}s`,
+              animationDelay: `${i * 0.7}s`,
+              boxShadow: `0 20px 50px -20px rgba(0,0,0,0.7), 0 0 40px -10px ${l.glow}`,
             }}
           >
             <div className="relative aspect-[4/3] bg-gradient-to-br from-surface-elevated to-surface flex items-center justify-center">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(255,107,53,0.25),transparent_70%)]" />
+              <div
+                className="absolute inset-0"
+                style={{ background: `radial-gradient(circle at 50% 40%, ${l.glow}, transparent 70%)` }}
+              />
+
               {s.image && (
                 <img
                   src={s.image}
