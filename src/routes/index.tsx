@@ -1,11 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
 import { SteamLoginButton } from "@/components/SteamLoginButton";
-import { SKINS, POSTS, MATCHES } from "@/lib/mock-data";
+import { SKINS, POSTS } from "@/lib/mock-data";
 import { Flame, ArrowRight, MessageCircle, Heart } from "lucide-react";
 import { TickerBar } from "@/components/TickerBar";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import { getMatches, type LiveMatch, type MatchTeam } from "@/lib/matches.functions";
 
 
 
@@ -232,7 +234,17 @@ function CommunityPreview() {
 }
 
 function MatchesPreview() {
-  const { t, formatTime } = useI18n();
+  const { t } = useI18n();
+  const navigate = useNavigate();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["matches", "upcoming"],
+    queryFn: () => getMatches({ data: { status: "upcoming" } }),
+    refetchInterval: 120_000,
+    staleTime: 60_000,
+  });
+
+  const matches: LiveMatch[] = (data?.matches ?? []).slice(0, 4);
+
   return (
     <section className="mb-16">
       <div className="flex items-end justify-between mb-6">
@@ -242,38 +254,78 @@ function MatchesPreview() {
         </Link>
       </div>
       <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4 reveal-stagger">
-        {MATCHES.map((m) => (
-          <div key={m.id} className="glass-card rounded-2xl p-5 hover:glow-border transition">
-            <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground mb-4">
-              <span>{m.tournament}</span>
-              <span className="text-amber">{t("common.tierShort", { tier: m.tier })}</span>
-            </div>
-            <div className="flex items-center justify-between mb-4">
-              <TeamBlock name={m.teamA} />
-              <span className="font-mono text-xs text-muted-foreground">{t("common.vs")}</span>
-              <TeamBlock name={m.teamB} />
-            </div>
-            <div className="flex items-center justify-between pt-3 border-t border-border text-xs">
-              <span className="text-muted-foreground">{formatTime(m.time)}</span>
-              {m.status === "live"
-                ? <span className="text-destructive font-bold flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" /> {t("common.live")}</span>
-                : <Link to="/matches" className="text-primary">{t("home.viewArrow")}</Link>}
-            </div>
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="glass-card rounded-2xl p-5 h-44 animate-pulse" />
+          ))
+        ) : isError || matches.length === 0 ? (
+          <div className="glass-card rounded-2xl p-8 text-center md:col-span-2 xl:col-span-4 text-sm text-muted-foreground">
+            {t("matches.empty")}
           </div>
-        ))}
+        ) : (
+          matches.map((m) => (
+            <div
+              key={m.id}
+              role="link"
+              tabIndex={0}
+              onClick={() => navigate({ to: "/matches/$matchId", params: { matchId: m.id } })}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  navigate({ to: "/matches/$matchId", params: { matchId: m.id } });
+                }
+              }}
+              className="glass-card rounded-2xl p-5 hover:glow-border transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/40"
+            >
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground mb-4 gap-2">
+                <span className="truncate">{m.league}</span>
+                <span className="text-amber whitespace-nowrap">{t("common.tierShort", { tier: m.tier })}</span>
+              </div>
+              <div className="flex items-center justify-between mb-4">
+                <TeamBlock team={m.teamA} />
+                <span className="font-mono text-xs text-muted-foreground">{t("common.vs")}</span>
+                <TeamBlock team={m.teamB} />
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-border text-xs">
+                <span className="text-muted-foreground truncate">{formatBangkok(m.beginAt ?? m.scheduledAt)}</span>
+                <span className="text-primary">{t("home.viewArrow")}</span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </section>
   );
 }
 
-function TeamBlock({ name }: { name: string }) {
-  // Team names always English
+const previewDtf = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Bangkok",
+  weekday: "short",
+  day: "2-digit",
+  month: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+
+function formatBangkok(iso: string | null): string {
+  if (!iso) return "TBD";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "TBD";
+  return previewDtf.format(d);
+}
+
+function TeamBlock({ team }: { team: MatchTeam }) {
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-surface-elevated to-surface border border-border flex items-center justify-center text-[10px] font-display font-bold">
-        {name.slice(0, 3).toUpperCase()}
+    <div className="flex flex-col items-center gap-2 w-20">
+      <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-surface-elevated to-surface border border-border flex items-center justify-center overflow-hidden">
+        {team.logoUrl ? (
+          <img src={team.logoUrl} alt={team.name} className="h-7 w-7 object-contain" loading="lazy" />
+        ) : (
+          <span className="text-[10px] font-display font-bold">{(team.acronym ?? team.name).slice(0, 3).toUpperCase()}</span>
+        )}
       </div>
-      <div className="text-xs font-semibold">{name}</div>
+      <div className="text-xs font-semibold text-center truncate w-full">{team.name}</div>
     </div>
   );
 }
