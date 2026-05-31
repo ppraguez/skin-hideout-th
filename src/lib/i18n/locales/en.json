@@ -10,7 +10,8 @@
   "sidebar": {
     "tagline": "SEA · Beta",
     "signIn": "Sign in",
-    "connectSteam": "Connect Steam"
+    "connectSteam": "Connect Steam",
+    "logout": "Sign out"
   },
   "common": {
     "viewAll": "View all",
