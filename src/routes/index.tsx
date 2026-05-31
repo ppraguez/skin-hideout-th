@@ -239,8 +239,9 @@ function MatchesPreview() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["matches", "upcoming"],
     queryFn: () => getMatches({ data: { status: "upcoming" } }),
-    refetchInterval: 120_000,
-    staleTime: 60_000,
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: true,
+    staleTime: 30_000,
   });
 
   const matches: LiveMatch[] = (data?.matches ?? []).slice(0, 4);
