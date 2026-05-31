@@ -28,10 +28,21 @@ const matchesQuery = (status: MatchStatus) =>
     staleTime: 15_000,
   });
 
+type SortKey = "date-asc" | "date-desc" | "tier";
+
 function Matches() {
   const [tab, setTab] = useState<MatchStatus>("live");
+  const [sort, setSort] = useState<SortKey>("date-asc");
   const { t } = useI18n();
   const { data, isLoading, isError } = useQuery(matchesQuery(tab));
+
+  // Default sort flips when switching to results
+  const effectiveSort: SortKey =
+    sort === "date-asc" && tab === "done"
+      ? "date-desc"
+      : sort === "date-desc" && tab !== "done"
+        ? "date-asc"
+        : sort;
 
   const tabLabel = (key: MatchStatus) => {
     if (key === "live") return t("matches.tabLive");
@@ -39,12 +50,22 @@ function Matches() {
     return t("matches.tabResults");
   };
 
+  const tierRank = (tier: string | null | undefined): number => {
+    const order: Record<string, number> = { s: 0, a: 1, b: 2, c: 3, d: 4 };
+    const k = (tier ?? "").toLowerCase();
+    return order[k] ?? 99;
+  };
+
   const apiError = data?.error;
   const matches = [...(data?.matches ?? [])].sort((a, b) => {
     const ta = new Date(a.beginAt ?? a.scheduledAt ?? 0).getTime() || 0;
     const tb = new Date(b.beginAt ?? b.scheduledAt ?? 0).getTime() || 0;
-    // Past results: newest first. Upcoming/live: soonest first.
-    return tab === "done" ? tb - ta : ta - tb;
+    if (effectiveSort === "tier") {
+      const diff = tierRank(a.tier) - tierRank(b.tier);
+      if (diff !== 0) return diff;
+      return tab === "done" ? tb - ta : ta - tb;
+    }
+    return effectiveSort === "date-desc" ? tb - ta : ta - tb;
   });
 
   return (
@@ -52,19 +73,38 @@ function Matches() {
       <h1 className="font-display text-3xl sm:text-4xl font-bold">{t("matches.title")}</h1>
       <p className="text-sm text-muted-foreground mt-1">{t("matches.subtitle")}</p>
 
-      <div className="mt-8 flex gap-2">
-        {(["live", "upcoming", "done"] as const).map((tk) => (
-          <button
-            key={tk}
-            onClick={() => setTab(tk)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium border transition capitalize ${
-              tab === tk ? "border-primary/60 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:text-foreground"
-            }`}
+      <div className="mt-8 flex flex-wrap gap-2 items-center justify-between">
+        <div className="flex gap-2 flex-wrap">
+          {(["live", "upcoming", "done"] as const).map((tk) => (
+            <button
+              key={tk}
+              onClick={() => setTab(tk)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium border transition capitalize ${
+                tab === tk ? "border-primary/60 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tk === "live" && "🔴 "}{tabLabel(tk)}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label htmlFor="match-sort" className="text-xs uppercase tracking-wider text-muted-foreground">
+            Sort
+          </label>
+          <select
+            id="match-sort"
+            value={effectiveSort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+            className="px-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
           >
-            {tk === "live" && "🔴 "}{tabLabel(tk)}
-          </button>
-        ))}
+            <option value="date-asc">Date — soonest first</option>
+            <option value="date-desc">Date — latest first</option>
+            <option value="tier">Tier (S → D)</option>
+          </select>
+        </div>
       </div>
+
 
       {isLoading ? (
         <div className="mt-6 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
