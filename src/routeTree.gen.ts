@@ -17,6 +17,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
+import { Route as MatchesMatchIdRouteImport } from './routes/matches.$matchId'
 import { Route as MarketCreateRouteImport } from './routes/market.create'
 import { Route as MarketIdRouteImport } from './routes/market.$id'
 import { Route as ApiAuthSteamRouteImport } from './routes/api/auth/steam'
@@ -63,6 +64,11 @@ const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
   path: '/profile/$username',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchesMatchIdRoute = MatchesMatchIdRouteImport.update({
+  id: '/$matchId',
+  path: '/$matchId',
+  getParentRoute: () => MatchesRoute,
+} as any)
 const MarketCreateRoute = MarketCreateRouteImport.update({
   id: '/create',
   path: '/create',
@@ -94,11 +100,12 @@ export interface FileRoutesByFullPath {
   '/community': typeof CommunityRoute
   '/login': typeof LoginRoute
   '/market': typeof MarketRouteWithChildren
-  '/matches': typeof MatchesRoute
+  '/matches': typeof MatchesRouteWithChildren
   '/premium': typeof PremiumRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/steam': typeof ApiAuthSteamRouteWithChildren
@@ -109,11 +116,12 @@ export interface FileRoutesByTo {
   '/community': typeof CommunityRoute
   '/login': typeof LoginRoute
   '/market': typeof MarketRouteWithChildren
-  '/matches': typeof MatchesRoute
+  '/matches': typeof MatchesRouteWithChildren
   '/premium': typeof PremiumRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/steam': typeof ApiAuthSteamRouteWithChildren
@@ -125,11 +133,12 @@ export interface FileRoutesById {
   '/community': typeof CommunityRoute
   '/login': typeof LoginRoute
   '/market': typeof MarketRouteWithChildren
-  '/matches': typeof MatchesRoute
+  '/matches': typeof MatchesRouteWithChildren
   '/premium': typeof PremiumRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/steam': typeof ApiAuthSteamRouteWithChildren
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/market/$id'
     | '/market/create'
+    | '/matches/$matchId'
     | '/profile/$username'
     | '/api/auth/logout'
     | '/api/auth/steam'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/market/$id'
     | '/market/create'
+    | '/matches/$matchId'
     | '/profile/$username'
     | '/api/auth/logout'
     | '/api/auth/steam'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/market/$id'
     | '/market/create'
+    | '/matches/$matchId'
     | '/profile/$username'
     | '/api/auth/logout'
     | '/api/auth/steam'
@@ -188,7 +200,7 @@ export interface RootRouteChildren {
   CommunityRoute: typeof CommunityRoute
   LoginRoute: typeof LoginRoute
   MarketRoute: typeof MarketRouteWithChildren
-  MatchesRoute: typeof MatchesRoute
+  MatchesRoute: typeof MatchesRouteWithChildren
   PremiumRoute: typeof PremiumRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
@@ -254,6 +266,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileUsernameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/matches/$matchId': {
+      id: '/matches/$matchId'
+      path: '/$matchId'
+      fullPath: '/matches/$matchId'
+      preLoaderRoute: typeof MatchesMatchIdRouteImport
+      parentRoute: typeof MatchesRoute
+    }
     '/market/create': {
       id: '/market/create'
       path: '/create'
@@ -305,6 +324,17 @@ const MarketRouteChildren: MarketRouteChildren = {
 const MarketRouteWithChildren =
   MarketRoute._addFileChildren(MarketRouteChildren)
 
+interface MatchesRouteChildren {
+  MatchesMatchIdRoute: typeof MatchesMatchIdRoute
+}
+
+const MatchesRouteChildren: MatchesRouteChildren = {
+  MatchesMatchIdRoute: MatchesMatchIdRoute,
+}
+
+const MatchesRouteWithChildren =
+  MatchesRoute._addFileChildren(MatchesRouteChildren)
+
 interface ApiAuthSteamRouteChildren {
   ApiAuthSteamReturnRoute: typeof ApiAuthSteamReturnRoute
 }
@@ -322,7 +352,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommunityRoute: CommunityRoute,
   LoginRoute: LoginRoute,
   MarketRoute: MarketRouteWithChildren,
-  MatchesRoute: MatchesRoute,
+  MatchesRoute: MatchesRouteWithChildren,
   PremiumRoute: PremiumRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
@@ -332,3 +362,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
