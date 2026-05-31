@@ -65,9 +65,9 @@ const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const MatchesMatchIdRoute = MatchesMatchIdRouteImport.update({
-  id: '/$matchId',
-  path: '/$matchId',
-  getParentRoute: () => MatchesRoute,
+  id: '/matches/$matchId',
+  path: '/matches/$matchId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MarketCreateRoute = MarketCreateRouteImport.update({
   id: '/create',
@@ -202,6 +202,7 @@ export interface RootRouteChildren {
   MarketRoute: typeof MarketRouteWithChildren
   PremiumRoute: typeof PremiumRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  MatchesMatchIdRoute: typeof MatchesMatchIdRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   MatchesIndexRoute: typeof MatchesIndexRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
@@ -268,10 +269,10 @@ declare module '@tanstack/react-router' {
     }
     '/matches/$matchId': {
       id: '/matches/$matchId'
-      path: '/$matchId'
+      path: '/matches/$matchId'
       fullPath: '/matches/$matchId'
       preLoaderRoute: typeof MatchesMatchIdRouteImport
-      parentRoute: typeof MatchesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/market/create': {
       id: '/market/create'
@@ -343,6 +344,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketRoute: MarketRouteWithChildren,
   PremiumRoute: PremiumRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  MatchesMatchIdRoute: MatchesMatchIdRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   MatchesIndexRoute: MatchesIndexRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
