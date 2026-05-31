@@ -104,14 +104,14 @@ function HeroDecor() {
   ].filter(Boolean) as typeof SKINS;
 
   const layouts = [
-    { x: 30,  y: 60,  rot: -7, z: 10, w: 240, glow: "rgba(236, 72, 153, 0.35)" },  // Karambit Fade — magenta
-    { x: 140, y: 220, rot: 5,  z: 20, w: 270, glow: "rgba(255, 140, 60, 0.40)" },  // AWP Asiimov — orange
+    { x: 60,  y: 110, rot: -8, z: 10, w: 230, glow: "rgba(236, 72, 153, 0.35)" },  // Karambit Fade — magenta
+    { x: 180, y: 250, rot: 6,  z: 20, w: 260, glow: "rgba(255, 140, 60, 0.40)" },  // AWP Asiimov — orange
   ];
 
   return (
     <div
       aria-hidden
-      className="pointer-events-none hidden md:block absolute right-2 lg:right-6 xl:right-10 top-1/2 -translate-y-1/2 w-[380px] lg:w-[440px] xl:w-[500px] h-[440px]"
+      className="pointer-events-none hidden md:block absolute right-2 lg:right-6 xl:right-10 top-1/2 -translate-y-1/2 w-[380px] lg:w-[440px] xl:w-[500px] h-[480px]"
     >
       <div className="absolute inset-0 rounded-full bg-primary/15 blur-3xl" />
       <div className="absolute right-10 top-10 h-40 w-40 rounded-full bg-amber/20 blur-3xl" />
@@ -132,7 +132,7 @@ function HeroDecor() {
         return (
           <div
             key={s.id}
-            className="absolute float-card glass-card rounded-2xl border border-border/70 overflow-hidden shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)]"
+            className="absolute float-card glass-card rounded-2xl border border-border/70 overflow-hidden"
             style={{
               left: l.x,
               top: l.y,
@@ -175,12 +175,8 @@ function HeroDecor() {
           </div>
         );
       })}
-
-      <div className="absolute top-2 right-6 z-30 flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-destructive/40 bg-background/70 backdrop-blur">
-        <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
-        <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/90">Live Trades</span>
-      </div>
     </div>
+
   );
 }
 
