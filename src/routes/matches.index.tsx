@@ -1,5 +1,7 @@
 import { createFileRoute, ErrorComponent, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const SORT_STORAGE_KEY = "matches.sort";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useI18n } from "@/lib/i18n/I18nProvider";
@@ -32,17 +34,19 @@ type SortKey = "date-asc" | "date-desc" | "tier";
 
 function Matches() {
   const [tab, setTab] = useState<MatchStatus>("live");
-  const [sort, setSort] = useState<SortKey>("date-asc");
+  const [sort, setSort] = useState<SortKey>(() => {
+    if (typeof window === "undefined") return "date-asc";
+    const saved = window.localStorage.getItem(SORT_STORAGE_KEY);
+    if (saved === "date-asc" || saved === "date-desc" || saved === "tier") return saved;
+    return "date-asc";
+  });
   const { t } = useI18n();
   const { data, isLoading, isError } = useQuery(matchesQuery(tab));
 
-  // Default sort flips when switching to results
-  const effectiveSort: SortKey =
-    sort === "date-asc" && tab === "done"
-      ? "date-desc"
-      : sort === "date-desc" && tab !== "done"
-        ? "date-asc"
-        : sort;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(SORT_STORAGE_KEY, sort);
+  }, [sort]);
 
   const tabLabel = (key: MatchStatus) => {
     if (key === "live") return t("matches.tabLive");
@@ -60,12 +64,12 @@ function Matches() {
   const matches = [...(data?.matches ?? [])].sort((a, b) => {
     const ta = new Date(a.beginAt ?? a.scheduledAt ?? 0).getTime() || 0;
     const tb = new Date(b.beginAt ?? b.scheduledAt ?? 0).getTime() || 0;
-    if (effectiveSort === "tier") {
+    if (sort === "tier") {
       const diff = tierRank(a.tier) - tierRank(b.tier);
       if (diff !== 0) return diff;
       return tab === "done" ? tb - ta : ta - tb;
     }
-    return effectiveSort === "date-desc" ? tb - ta : ta - tb;
+    return sort === "date-desc" ? tb - ta : ta - tb;
   });
 
   return (
@@ -94,7 +98,7 @@ function Matches() {
           </label>
           <select
             id="match-sort"
-            value={effectiveSort}
+            value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
             className="px-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
           >
