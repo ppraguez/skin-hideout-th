@@ -164,6 +164,15 @@ function formatBangkok(iso: string | null): string {
   return dtf.format(d);
 }
 
+const localTzLabel: string = (() => {
+  try {
+    const parts = new Intl.DateTimeFormat(undefined, { timeZoneName: "short" }).formatToParts(new Date());
+    return parts.find((p) => p.type === "timeZoneName")?.value ?? "";
+  } catch {
+    return "";
+  }
+})();
+
 const dayKeyFmt = new Intl.DateTimeFormat("en-CA", {
   year: "numeric",
   month: "2-digit",
