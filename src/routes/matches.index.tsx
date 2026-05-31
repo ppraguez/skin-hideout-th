@@ -34,17 +34,19 @@ type SortKey = "date-asc" | "date-desc" | "tier";
 
 function Matches() {
   const [tab, setTab] = useState<MatchStatus>("live");
-  const [sort, setSort] = useState<SortKey>("date-asc");
+  const [sort, setSort] = useState<SortKey>(() => {
+    if (typeof window === "undefined") return "date-asc";
+    const saved = window.localStorage.getItem(SORT_STORAGE_KEY);
+    if (saved === "date-asc" || saved === "date-desc" || saved === "tier") return saved;
+    return "date-asc";
+  });
   const { t } = useI18n();
   const { data, isLoading, isError } = useQuery(matchesQuery(tab));
 
-  // Default sort flips when switching to results
-  const effectiveSort: SortKey =
-    sort === "date-asc" && tab === "done"
-      ? "date-desc"
-      : sort === "date-desc" && tab !== "done"
-        ? "date-asc"
-        : sort;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(SORT_STORAGE_KEY, sort);
+  }, [sort]);
 
   const tabLabel = (key: MatchStatus) => {
     if (key === "live") return t("matches.tabLive");
