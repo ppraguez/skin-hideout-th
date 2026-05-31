@@ -275,7 +275,7 @@ export const getMatchDetail = createServerFn({ method: "GET" })
         return {
           id: p.id ?? 0,
           teamId: p.current_team?.id ?? null,
-          name: p.name ?? [p.first_name, p.last_name].filter(Boolean).join(" ") || "—",
+          name: p.name ?? ([p.first_name, p.last_name].filter(Boolean).join(" ") || "—"),
           fullName: [p.first_name, p.last_name].filter(Boolean).join(" ") || null,
           nationality: p.nationality ?? null,
           role: p.role ?? null,
