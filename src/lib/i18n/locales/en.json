@@ -139,9 +139,9 @@
   },
   "matches": {
     "metaTitle": "Match Hub — CS2Hideout",
-    "metaDesc": "Live, upcoming, and completed CS2 matches — Bangkok time.",
+    "metaDesc": "Live, upcoming, and completed CS2 matches — your local time zone.",
     "title": "Match Hub",
-    "subtitle": "All times shown in Bangkok (GMT+7).",
+    "subtitle": "All times shown in your local time zone.",
     "tabLive": "live",
     "tabUpcoming": "upcoming",
     "tabResults": "Results",
