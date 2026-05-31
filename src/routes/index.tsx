@@ -1,11 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
 import { SteamLoginButton } from "@/components/SteamLoginButton";
-import { SKINS, POSTS, MATCHES } from "@/lib/mock-data";
+import { SKINS, POSTS } from "@/lib/mock-data";
 import { Flame, ArrowRight, MessageCircle, Heart } from "lucide-react";
 import { TickerBar } from "@/components/TickerBar";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import { getMatches, type LiveMatch, type MatchTeam } from "@/lib/matches.functions";
 
 
 
