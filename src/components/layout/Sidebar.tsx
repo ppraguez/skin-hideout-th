@@ -1,10 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, ShoppingBag, Users, Gamepad2, Crown, Settings, Flame } from "lucide-react";
+import { Home, ShoppingBag, Users, Gamepad2, Crown, LogOut, Flame } from "lucide-react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import { useCurrentUser, useLogout } from "@/hooks/use-current-user";
 
 export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { t } = useI18n();
+  const { data: user, isLoading } = useCurrentUser();
+  const logout = useLogout();
 
   const nav = [
     { to: "/", label: t("nav.home"), icon: Home },
@@ -48,14 +51,49 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto pt-6 border-t border-border">
-        <Link to="/login" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-elevated transition-colors">
-          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/40 to-amber/30 border border-border" />
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium truncate">{t("sidebar.signIn")}</div>
-            <div className="text-[11px] text-muted-foreground">{t("sidebar.connectSteam")}</div>
+        {isLoading ? (
+          <div className="flex items-center gap-3 px-3 py-2.5">
+            <div className="h-9 w-9 rounded-full bg-surface-elevated animate-pulse" />
+            <div className="flex-1 h-3 rounded bg-surface-elevated animate-pulse" />
           </div>
-          <Settings className="h-4 w-4 text-muted-foreground" />
-        </Link>
+        ) : user ? (
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface-elevated/50">
+            {user.avatar_url ? (
+              <img
+                src={user.avatar_url}
+                alt={user.username}
+                className="h-9 w-9 rounded-full border border-border object-cover"
+              />
+            ) : (
+              <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/40 to-amber/30 border border-border" />
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium truncate">{user.username}</div>
+              <div className="text-[11px] text-muted-foreground truncate">Steam · Connected</div>
+            </div>
+            <button
+              onClick={() => logout.mutate()}
+              disabled={logout.isPending}
+              aria-label={t("sidebar.logout")}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <a
+            href="/api/auth/steam"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-elevated transition-colors"
+          >
+            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/40 to-amber/30 border border-border flex items-center justify-center">
+              <Flame className="h-4 w-4 text-primary" strokeWidth={2.5} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium truncate">{t("sidebar.signIn")}</div>
+              <div className="text-[11px] text-muted-foreground">{t("sidebar.connectSteam")}</div>
+            </div>
+          </a>
+        )}
       </div>
     </aside>
   );
