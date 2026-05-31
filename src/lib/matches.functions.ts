@@ -231,6 +231,17 @@ export const getMatches = createServerFn({ method: "GET" })
     }
   });
 
+type PandaMatchPlayerStatsRow = {
+  player?: PandaPlayer & { current_team?: { id?: number | null } | null };
+  team?: { id?: number | null } | null;
+  stats?: {
+    kills?: number; kills_total?: number;
+    deaths?: number; deaths_total?: number;
+    assists?: number; assists_total?: number;
+  } | null;
+};
+type PandaMatchPlayersStatsResponse = { players?: PandaMatchPlayerStatsRow[] };
+
 export const getMatchDetail = createServerFn({ method: "GET" })
   .inputValidator(z.object({ id: z.string().regex(/^\d+$/) }).parse)
   .handler(async ({ data }): Promise<{ match: MatchDetail | null; error: string | null }> => {
@@ -241,51 +252,96 @@ export const getMatchDetail = createServerFn({ method: "GET" })
       const status = statusFromPanda(m.status);
       const base = mapMatch(m, status);
 
-      // Map players + per-player aggregated stats from games
-      const statTotals = new Map<number, { k: number; d: number; a: number }>();
+      // Dedicated player-stats endpoint
+      let statsRows: PandaMatchPlayerStatsRow[] = [];
+      try {
+        const s = await pandaFetch<PandaMatchPlayersStatsResponse | PandaMatchPlayerStatsRow[]>(
+          `/csgo/matches/${data.id}/players/stats`,
+          key,
+        );
+        statsRows = Array.isArray(s) ? s : s.players ?? [];
+      } catch (e) {
+        console.warn("PandaScore /players/stats failed", e);
+      }
+
+      type Row = { player: PandaPlayer; teamId: number | null; k?: number; d?: number; a?: number };
+      const byId = new Map<number, Row>();
+
+      // Seed rosters from opponents (PandaScore may hydrate team.players)
+      type TeamWithPlayers = PandaTeam & { players?: PandaPlayer[] };
+      for (const o of m.opponents ?? []) {
+        const team = o.opponent as TeamWithPlayers | null;
+        if (!team?.players) continue;
+        for (const p of team.players) {
+          if (!p.id) continue;
+          byId.set(p.id, { player: p, teamId: team.id ?? null });
+        }
+      }
+      for (const p of m.players ?? []) {
+        if (!p.id) continue;
+        if (!byId.has(p.id)) byId.set(p.id, { player: p, teamId: p.current_team?.id ?? null });
+      }
+
       const teamKills = new Map<number, number>();
       const teamDeaths = new Map<number, number>();
 
-      const collectStat = (stat: PandaGamePlayerStat, teamId?: number) => {
-        const pid = stat.player_id ?? stat.player?.id;
-        if (!pid) return;
-        const cur = statTotals.get(pid) ?? { k: 0, d: 0, a: 0 };
-        cur.k += stat.kills ?? 0;
-        cur.d += stat.deaths ?? 0;
-        cur.a += stat.assists ?? 0;
-        statTotals.set(pid, cur);
-        if (teamId) {
-          teamKills.set(teamId, (teamKills.get(teamId) ?? 0) + (stat.kills ?? 0));
-          teamDeaths.set(teamId, (teamDeaths.get(teamId) ?? 0) + (stat.deaths ?? 0));
-        }
-      };
-
-      for (const g of m.games ?? []) {
-        if (g.teams?.length) {
-          for (const t of g.teams) {
-            for (const s of t.players ?? []) collectStat(s, t.team?.id);
-          }
-        } else if (g.players?.length) {
-          for (const s of g.players) collectStat(s);
+      for (const row of statsRows) {
+        const p = row.player;
+        if (!p?.id) continue;
+        const tid = row.team?.id ?? p.current_team?.id ?? null;
+        const k = row.stats?.kills ?? row.stats?.kills_total;
+        const d = row.stats?.deaths ?? row.stats?.deaths_total;
+        const a = row.stats?.assists ?? row.stats?.assists_total;
+        const existing = byId.get(p.id);
+        byId.set(p.id, {
+          player: { ...(existing?.player ?? {}), ...p },
+          teamId: existing?.teamId ?? tid,
+          k, d, a,
+        });
+        if (tid) {
+          if (typeof k === "number") teamKills.set(tid, (teamKills.get(tid) ?? 0) + k);
+          if (typeof d === "number") teamDeaths.set(tid, (teamDeaths.get(tid) ?? 0) + d);
         }
       }
 
-      const players: MatchPlayer[] = (m.players ?? []).map((p) => {
-        const totals = p.id ? statTotals.get(p.id) : undefined;
-        return {
-          id: p.id ?? 0,
-          teamId: p.current_team?.id ?? null,
-          name: p.name ?? ([p.first_name, p.last_name].filter(Boolean).join(" ") || "—"),
-          fullName: [p.first_name, p.last_name].filter(Boolean).join(" ") || null,
-          nationality: p.nationality ?? null,
-          role: p.role ?? null,
-          imageUrl: p.image_url ?? null,
-          age: p.age ?? null,
-          kills: totals?.k,
-          deaths: totals?.d,
-          assists: totals?.a,
-        };
-      });
+      // Fallback: aggregate from per-game stats
+      if (statsRows.length === 0) {
+        for (const g of m.games ?? []) {
+          const collect = (st: PandaGamePlayerStat, tid?: number) => {
+            const pid = st.player_id ?? st.player?.id;
+            if (!pid) return;
+            const row = byId.get(pid) ?? { player: { id: pid }, teamId: tid ?? null };
+            row.k = (row.k ?? 0) + (st.kills ?? 0);
+            row.d = (row.d ?? 0) + (st.deaths ?? 0);
+            row.a = (row.a ?? 0) + (st.assists ?? 0);
+            if (!row.teamId && tid) row.teamId = tid;
+            byId.set(pid, row);
+            if (tid) {
+              teamKills.set(tid, (teamKills.get(tid) ?? 0) + (st.kills ?? 0));
+              teamDeaths.set(tid, (teamDeaths.get(tid) ?? 0) + (st.deaths ?? 0));
+            }
+          };
+          if (g.teams?.length) {
+            for (const t of g.teams) for (const s of t.players ?? []) collect(s, t.team?.id);
+          } else if (g.players?.length) {
+            for (const s of g.players) collect(s);
+          }
+        }
+      }
+
+      const players: MatchPlayer[] = Array.from(byId.values()).map(({ player: p, teamId, k, d, a }) => ({
+        id: p.id ?? 0,
+        teamId,
+        name: p.name ?? ([p.first_name, p.last_name].filter(Boolean).join(" ") || "—"),
+        fullName: [p.first_name, p.last_name].filter(Boolean).join(" ") || null,
+        nationality: p.nationality ?? null,
+        role: p.role ?? null,
+        imageUrl: p.image_url ?? null,
+        age: p.age ?? null,
+        kills: k,
+        deaths: d,
+        assists: a,
+      }));
 
       const games: MatchGame[] = (m.games ?? []).map((g) => ({
         id: g.id,
