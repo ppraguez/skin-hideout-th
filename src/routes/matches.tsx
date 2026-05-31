@@ -3,7 +3,7 @@ import { useState } from "react";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useI18n } from "@/lib/i18n/I18nProvider";
-import { getMatches, type LiveMatch, type MatchStatus } from "@/lib/matches.functions";
+import { getMatches, type LiveMatch, type MatchStatus, type MatchTeam } from "@/lib/matches.functions";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
@@ -64,7 +64,7 @@ function Matches() {
       <div className="mt-6 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="glass-card rounded-2xl p-6 animate-pulse h-44" />
+            <div key={i} className="glass-card rounded-2xl p-6 animate-pulse h-56" />
           ))
         ) : isError || apiError ? (
           <div className="glass-card rounded-2xl p-10 text-center md:col-span-2 xl:col-span-3">
@@ -84,9 +84,11 @@ function Matches() {
   );
 }
 
-const tf = new Intl.DateTimeFormat("en-GB", {
+const dtf = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Asia/Bangkok",
   weekday: "short",
+  day: "2-digit",
+  month: "short",
   hour: "2-digit",
   minute: "2-digit",
   hour12: false,
@@ -96,42 +98,89 @@ function formatBangkok(iso: string | null): string {
   if (!iso) return "TBD";
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "TBD";
-  return tf.format(d);
+  return dtf.format(d);
+}
+
+function countdown(iso: string | null): string | null {
+  if (!iso) return null;
+  const ms = new Date(iso).getTime() - Date.now();
+  if (isNaN(ms) || ms <= 0) return null;
+  const mins = Math.floor(ms / 60000);
+  if (mins < 60) return `in ${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `in ${hrs}h ${mins % 60}m`;
+  const days = Math.floor(hrs / 24);
+  return `in ${days}d ${hrs % 24}h`;
+}
+
+function formatViewers(n: number | null): string | null {
+  if (!n || n <= 0) return null;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k watching`;
+  return `${n} watching`;
 }
 
 function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, string | number>) => string }) {
+  const cd = m.status === "upcoming" ? countdown(m.beginAt ?? m.scheduledAt) : null;
+  const viewers = formatViewers(m.liveViewers);
+
   return (
-    <div className="glass-card rounded-2xl p-6 hover:glow-border transition">
-      <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground mb-5">
-        <span className="truncate pr-2">{m.tournament}</span>
-        <span className="text-amber whitespace-nowrap">{t("common.tierShort", { tier: m.tier })}</span>
+    <div className="glass-card rounded-2xl p-5 hover:glow-border transition flex flex-col">
+      {/* League header */}
+      <div className="flex items-center gap-2 mb-4">
+        {m.leagueLogo ? (
+          <img src={m.leagueLogo} alt="" className="h-6 w-6 object-contain rounded" loading="lazy" />
+        ) : (
+          <div className="h-6 w-6 rounded bg-surface-elevated" />
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="text-xs font-semibold truncate">{m.league}</div>
+          {m.serie && <div className="text-[10px] text-muted-foreground truncate">{m.serie}</div>}
+        </div>
+        <span className="text-[10px] uppercase tracking-wider text-amber whitespace-nowrap">
+          {t("common.tierShort", { tier: m.tier })}
+        </span>
       </div>
-      <div className="flex items-center justify-between">
-        <Team name={m.teamA} score={m.scoreA} />
-        <span className="font-mono text-xs text-muted-foreground">{t("common.vs")}</span>
-        <Team name={m.teamB} score={m.scoreB} />
+
+      {/* Teams */}
+      <div className="flex items-center justify-between gap-2">
+        <Team team={m.teamA} />
+        <div className="flex flex-col items-center gap-1">
+          {m.bestOf ? (
+            <span className="text-[10px] font-mono text-muted-foreground">BO{m.bestOf}</span>
+          ) : null}
+          <span className="font-mono text-xs text-muted-foreground">{t("common.vs")}</span>
+        </div>
+        <Team team={m.teamB} align="right" />
       </div>
-      <div className="flex items-center justify-between mt-5 pt-4 border-t border-border text-xs">
-        <span className="text-muted-foreground">{formatBangkok(m.beginAt)}</span>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between mt-5 pt-4 border-t border-border text-xs gap-2">
+        <div className="flex flex-col min-w-0">
+          <span className="text-muted-foreground truncate">{formatBangkok(m.beginAt ?? m.scheduledAt)}</span>
+          {cd && <span className="text-primary text-[10px] font-mono">{cd}</span>}
+          {viewers && m.status === "live" && (
+            <span className="text-destructive text-[10px] font-mono">{viewers}</span>
+          )}
+        </div>
         {m.status === "live" ? (
           m.streamUrl ? (
             <a
               href={m.streamUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-destructive font-bold flex items-center gap-1 hover:underline"
+              className="text-destructive font-bold flex items-center gap-1 hover:underline whitespace-nowrap"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
               {t("common.live")}
             </a>
           ) : (
-            <span className="text-destructive font-bold flex items-center gap-1">
+            <span className="text-destructive font-bold flex items-center gap-1 whitespace-nowrap">
               <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
               {t("common.live")}
             </span>
           )
         ) : m.streamUrl ? (
-          <a href={m.streamUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+          <a href={m.streamUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline whitespace-nowrap">
             {t("matches.viewMatch")}
           </a>
         ) : (
@@ -142,14 +191,27 @@ function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, s
   );
 }
 
-function Team({ name, score }: { name: string; score?: number }) {
+function Team({ team, align = "left" }: { team: MatchTeam; align?: "left" | "right" }) {
   return (
-    <div className="flex flex-col items-center gap-2 w-24">
-      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-surface-elevated to-surface border border-border flex items-center justify-center text-xs font-display font-bold">
-        {name.slice(0, 3).toUpperCase()}
+    <div className={`flex flex-col items-center gap-2 w-24 ${team.isWinner ? "" : "opacity-90"}`}>
+      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-surface-elevated to-surface border border-border flex items-center justify-center overflow-hidden">
+        {team.logoUrl ? (
+          <img src={team.logoUrl} alt={team.name} className="h-10 w-10 object-contain" loading="lazy" />
+        ) : (
+          <span className="text-xs font-display font-bold">
+            {(team.acronym ?? team.name).slice(0, 3).toUpperCase()}
+          </span>
+        )}
       </div>
-      <div className="text-sm font-semibold text-center truncate w-full">{name}</div>
-      {score !== undefined && <div className="font-mono text-lg font-bold text-primary">{score}</div>}
+      <div className={`text-sm font-semibold text-center truncate w-full ${team.isWinner ? "text-primary" : ""}`}>
+        {team.name}
+      </div>
+      {team.score !== undefined && (
+        <div className={`font-mono text-lg font-bold ${team.isWinner ? "text-primary" : "text-muted-foreground"}`}>
+          {team.score}
+        </div>
+      )}
+      {align === "right" ? null : null}
     </div>
   );
 }
