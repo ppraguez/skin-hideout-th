@@ -1,5 +1,7 @@
 import { createFileRoute, ErrorComponent, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const SORT_STORAGE_KEY = "matches.sort";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useI18n } from "@/lib/i18n/I18nProvider";
