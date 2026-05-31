@@ -1,4 +1,4 @@
-import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -122,12 +122,20 @@ function formatViewers(n: number | null): string | null {
 function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, string | number>) => string }) {
   const cd = m.status === "upcoming" ? countdown(m.beginAt ?? m.scheduledAt) : null;
   const viewers = formatViewers(m.liveViewers);
+  const navigate = useNavigate();
 
   return (
-    <Link
-      to="/matches/$matchId"
-      params={{ matchId: m.id }}
-      className="glass-card rounded-2xl p-5 hover:glow-border transition flex flex-col block"
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={() => navigate({ to: "/matches/$matchId", params: { matchId: m.id } })}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          navigate({ to: "/matches/$matchId", params: { matchId: m.id } });
+        }
+      }}
+      className="glass-card rounded-2xl p-5 hover:glow-border transition flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/40"
     >
       {/* League header */}
       <div className="flex items-center gap-2 mb-4">
@@ -191,7 +199,7 @@ function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, s
           <span className="text-muted-foreground">—</span>
         )}
       </div>
-    </Link>
+    </div>
   );
 }
 
