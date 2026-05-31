@@ -19,6 +19,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as MarketCreateRouteImport } from './routes/market.create'
 import { Route as MarketIdRouteImport } from './routes/market.$id'
+import { Route as ApiAuthSteamRouteImport } from './routes/api/auth/steam'
+import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
+import { Route as ApiAuthSteamReturnRouteImport } from './routes/api/auth/steam.return'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -70,6 +73,21 @@ const MarketIdRoute = MarketIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => MarketRoute,
 } as any)
+const ApiAuthSteamRoute = ApiAuthSteamRouteImport.update({
+  id: '/api/auth/steam',
+  path: '/api/auth/steam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthLogoutRoute = ApiAuthLogoutRouteImport.update({
+  id: '/api/auth/logout',
+  path: '/api/auth/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSteamReturnRoute = ApiAuthSteamReturnRouteImport.update({
+  id: '/return',
+  path: '/return',
+  getParentRoute: () => ApiAuthSteamRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +100,9 @@ export interface FileRoutesByFullPath {
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
   '/profile/$username': typeof ProfileUsernameRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/auth/steam': typeof ApiAuthSteamRouteWithChildren
+  '/api/auth/steam/return': typeof ApiAuthSteamReturnRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +115,9 @@ export interface FileRoutesByTo {
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
   '/profile/$username': typeof ProfileUsernameRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/auth/steam': typeof ApiAuthSteamRouteWithChildren
+  '/api/auth/steam/return': typeof ApiAuthSteamReturnRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +131,9 @@ export interface FileRoutesById {
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
   '/profile/$username': typeof ProfileUsernameRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/auth/steam': typeof ApiAuthSteamRouteWithChildren
+  '/api/auth/steam/return': typeof ApiAuthSteamReturnRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +148,9 @@ export interface FileRouteTypes {
     | '/market/$id'
     | '/market/create'
     | '/profile/$username'
+    | '/api/auth/logout'
+    | '/api/auth/steam'
+    | '/api/auth/steam/return'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +163,9 @@ export interface FileRouteTypes {
     | '/market/$id'
     | '/market/create'
     | '/profile/$username'
+    | '/api/auth/logout'
+    | '/api/auth/steam'
+    | '/api/auth/steam/return'
   id:
     | '__root__'
     | '/'
@@ -145,6 +178,9 @@ export interface FileRouteTypes {
     | '/market/$id'
     | '/market/create'
     | '/profile/$username'
+    | '/api/auth/logout'
+    | '/api/auth/steam'
+    | '/api/auth/steam/return'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -156,6 +192,8 @@ export interface RootRouteChildren {
   PremiumRoute: typeof PremiumRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
+  ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
+  ApiAuthSteamRoute: typeof ApiAuthSteamRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -230,6 +268,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketIdRouteImport
       parentRoute: typeof MarketRoute
     }
+    '/api/auth/steam': {
+      id: '/api/auth/steam'
+      path: '/api/auth/steam'
+      fullPath: '/api/auth/steam'
+      preLoaderRoute: typeof ApiAuthSteamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/logout': {
+      id: '/api/auth/logout'
+      path: '/api/auth/logout'
+      fullPath: '/api/auth/logout'
+      preLoaderRoute: typeof ApiAuthLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/steam/return': {
+      id: '/api/auth/steam/return'
+      path: '/return'
+      fullPath: '/api/auth/steam/return'
+      preLoaderRoute: typeof ApiAuthSteamReturnRouteImport
+      parentRoute: typeof ApiAuthSteamRoute
+    }
   }
 }
 
@@ -246,6 +305,18 @@ const MarketRouteChildren: MarketRouteChildren = {
 const MarketRouteWithChildren =
   MarketRoute._addFileChildren(MarketRouteChildren)
 
+interface ApiAuthSteamRouteChildren {
+  ApiAuthSteamReturnRoute: typeof ApiAuthSteamReturnRoute
+}
+
+const ApiAuthSteamRouteChildren: ApiAuthSteamRouteChildren = {
+  ApiAuthSteamReturnRoute: ApiAuthSteamReturnRoute,
+}
+
+const ApiAuthSteamRouteWithChildren = ApiAuthSteamRoute._addFileChildren(
+  ApiAuthSteamRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CommunityRoute: CommunityRoute,
@@ -255,6 +326,8 @@ const rootRouteChildren: RootRouteChildren = {
   PremiumRoute: PremiumRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
+  ApiAuthLogoutRoute: ApiAuthLogoutRoute,
+  ApiAuthSteamRoute: ApiAuthSteamRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

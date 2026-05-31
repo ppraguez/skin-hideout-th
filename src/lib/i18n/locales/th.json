@@ -10,7 +10,8 @@
   "sidebar": {
     "tagline": "SEA · เบต้า",
     "signIn": "เข้าสู่ระบบ",
-    "connectSteam": "เชื่อมต่อ Steam"
+    "connectSteam": "เชื่อมต่อ Steam",
+    "logout": "ออกจากระบบ"
   },
   "common": {
     "viewAll": "ดูทั้งหมด",
