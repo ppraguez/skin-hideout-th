@@ -167,8 +167,8 @@ function HeroDecor() {
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">{s.weapon}</div>
                 <div className="text-xs font-semibold truncate">{s.name}</div>
               </div>
-              {s.priceUsd ? (
-                <div className="font-mono text-sm font-bold text-amber tabular-nums">${s.priceUsd}</div>
+              {s.priceThb ? (
+                <div className="font-mono text-sm font-bold text-amber tabular-nums">{formatPrice(s.priceThb)}</div>
               ) : (
                 <div className="text-[10px] font-bold text-primary uppercase">Trade</div>
               )}
