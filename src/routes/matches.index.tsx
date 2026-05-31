@@ -5,7 +5,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { getMatches, type LiveMatch, type MatchStatus, type MatchTeam } from "@/lib/matches.functions";
 
-export const Route = createFileRoute("/matches")({
+export const Route = createFileRoute("/matches/")({
   head: () => ({
     meta: [
       { title: "Match Hub — CS2Hideout" },
