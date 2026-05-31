@@ -191,7 +191,7 @@ function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, s
           <span className="text-muted-foreground">—</span>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
 
