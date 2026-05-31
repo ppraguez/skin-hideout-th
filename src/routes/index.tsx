@@ -101,13 +101,11 @@ function HeroDecor() {
   const picks = [
     SKINS.find((s) => s.id === "4"),  // Karambit Fade
     SKINS.find((s) => s.id === "2"),  // AWP Asiimov
-    SKINS.find((s) => s.id === "1"),  // AK Redline
   ].filter(Boolean) as typeof SKINS;
 
   const layouts = [
-    { x: 40,  y: 30,  rot: -8, z: 10, w: 230, glow: "rgba(236, 72, 153, 0.35)" },  // Karambit Fade — magenta
-    { x: 150, y: 130, rot: 4,  z: 20, w: 260, glow: "rgba(255, 140, 60, 0.40)" },  // AWP Asiimov — orange
-    { x: 70,  y: 250, rot: -3, z: 15, w: 240, glow: "rgba(220, 38, 38, 0.35)" },   // AK Redline — red
+    { x: 30,  y: 60,  rot: -7, z: 10, w: 240, glow: "rgba(236, 72, 153, 0.35)" },  // Karambit Fade — magenta
+    { x: 140, y: 220, rot: 5,  z: 20, w: 270, glow: "rgba(255, 140, 60, 0.40)" },  // AWP Asiimov — orange
   ];
 
   return (
