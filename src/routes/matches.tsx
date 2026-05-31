@@ -180,13 +180,6 @@ function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, s
               href={m.streamUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-destructive font-bold flex items-center gap-1 hover:underline whitespace-nowrap"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
-            <a
-              href={m.streamUrl}
-              target="_blank"
-              rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="text-destructive font-bold flex items-center gap-1 hover:underline whitespace-nowrap"
             >
