@@ -41,6 +41,110 @@ export type Database = {
         }
         Relationships: []
       }
+      quick_buy_listings: {
+        Row: {
+          buy_price_thb: number
+          created_at: string
+          id: string
+          image_url: string | null
+          market_percentage: number
+          max_float: number
+          min_float: number
+          skin_name: string
+          stattrak_accepted: boolean
+          status: string
+          updated_at: string
+          weapon: string
+          wear: string
+        }
+        Insert: {
+          buy_price_thb: number
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          market_percentage?: number
+          max_float?: number
+          min_float?: number
+          skin_name: string
+          stattrak_accepted?: boolean
+          status?: string
+          updated_at?: string
+          weapon: string
+          wear: string
+        }
+        Update: {
+          buy_price_thb?: number
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          market_percentage?: number
+          max_float?: number
+          min_float?: number
+          skin_name?: string
+          stattrak_accepted?: boolean
+          status?: string
+          updated_at?: string
+          weapon?: string
+          wear?: string
+        }
+        Relationships: []
+      }
+      quick_buy_submissions: {
+        Row: {
+          contact_method: string
+          created_at: string
+          float_value: number | null
+          id: string
+          inspect_link: string | null
+          listing_id: string | null
+          notes: string | null
+          skin_name: string
+          stattrak: boolean
+          status: string
+          updated_at: string
+          user_id: string | null
+          wear: string
+        }
+        Insert: {
+          contact_method: string
+          created_at?: string
+          float_value?: number | null
+          id?: string
+          inspect_link?: string | null
+          listing_id?: string | null
+          notes?: string | null
+          skin_name: string
+          stattrak?: boolean
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          wear: string
+        }
+        Update: {
+          contact_method?: string
+          created_at?: string
+          float_value?: number | null
+          id?: string
+          inspect_link?: string | null
+          listing_id?: string | null
+          notes?: string | null
+          skin_name?: string
+          stattrak?: boolean
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          wear?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quick_buy_submissions_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "quick_buy_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

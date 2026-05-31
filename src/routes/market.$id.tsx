@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { SkinCard } from "@/components/SkinCard";
 import type { Skin } from "@/lib/mock-data";
 import { SKINS, WEAR_COLOR, WEAR_LABEL } from "@/lib/mock-data";
-import { ExternalLink, MessageCircle, Heart, Star, Shield } from "lucide-react";
+import { ExternalLink, MessageCircle, Heart, Star, Shield, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export const Route = createFileRoute("/market/$id")({
@@ -191,6 +191,34 @@ function SkinDetail() {
               {t("skinDetail.shield")}
             </div>
           </div>
+
+          {skin.priceThb && (
+            <div className="glass-card rounded-2xl p-5 border-l-4 border-l-primary">
+              <div className="flex items-center gap-2 text-primary mb-1">
+                <Zap className="h-4 w-4" />
+                <span className="text-xs font-bold uppercase tracking-widest">⚡ {t("quickBuy.panelTitle")}</span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">{t("quickBuy.panelSub")}</p>
+              {(() => {
+                const qbPrice = Math.round(skin.priceThb! * 0.82);
+                return (
+                  <>
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <div className="font-mono text-2xl font-bold text-primary tabular-nums">{formatPrice(qbPrice)}</div>
+                      <span className="text-[11px] text-muted-foreground">{t("quickBuy.marketPct", { pct: 82 })}</span>
+                    </div>
+                    <Link
+                      to="/quick-buy"
+                      className="mt-3 w-full inline-flex items-center justify-center py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:brightness-110 transition"
+                    >
+                      {t("quickBuy.panelCta", { price: formatPrice(qbPrice) })}
+                    </Link>
+                    <p className="text-[11px] text-muted-foreground mt-2">{t("quickBuy.panelDisclaimer")}</p>
+                  </>
+                );
+              })()}
+            </div>
+          )}
 
           <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-4">

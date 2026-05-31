@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as QuickBuyRouteImport } from './routes/quick-buy'
 import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as LoginRouteImport } from './routes/login'
@@ -27,6 +28,11 @@ import { Route as ApiAuthSteamReturnRouteImport } from './routes/api/auth/steam.
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuickBuyRoute = QuickBuyRouteImport.update({
+  id: '/quick-buy',
+  path: '/quick-buy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PremiumRoute = PremiumRouteImport.update({
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/market': typeof MarketRouteWithChildren
   '/premium': typeof PremiumRoute
+  '/quick-buy': typeof QuickBuyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/market': typeof MarketRouteWithChildren
   '/premium': typeof PremiumRoute
+  '/quick-buy': typeof QuickBuyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/market': typeof MarketRouteWithChildren
   '/premium': typeof PremiumRoute
+  '/quick-buy': typeof QuickBuyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/market/$id': typeof MarketIdRoute
   '/market/create': typeof MarketCreateRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/market'
     | '/premium'
+    | '/quick-buy'
     | '/sitemap.xml'
     | '/market/$id'
     | '/market/create'
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/market'
     | '/premium'
+    | '/quick-buy'
     | '/sitemap.xml'
     | '/market/$id'
     | '/market/create'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/market'
     | '/premium'
+    | '/quick-buy'
     | '/sitemap.xml'
     | '/market/$id'
     | '/market/create'
@@ -201,6 +213,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MarketRoute: typeof MarketRouteWithChildren
   PremiumRoute: typeof PremiumRoute
+  QuickBuyRoute: typeof QuickBuyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   MatchesMatchIdRoute: typeof MatchesMatchIdRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
@@ -216,6 +229,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quick-buy': {
+      id: '/quick-buy'
+      path: '/quick-buy'
+      fullPath: '/quick-buy'
+      preLoaderRoute: typeof QuickBuyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/premium': {
@@ -343,6 +363,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MarketRoute: MarketRouteWithChildren,
   PremiumRoute: PremiumRoute,
+  QuickBuyRoute: QuickBuyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   MatchesMatchIdRoute: MatchesMatchIdRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
