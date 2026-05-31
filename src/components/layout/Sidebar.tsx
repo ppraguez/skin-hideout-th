@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, ShoppingBag, Users, Gamepad2, Crown, LogOut } from "lucide-react";
+import { Home, ShoppingBag, Users, Gamepad2, Crown, LogOut, Zap } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { useCurrentUser, useLogout } from "@/hooks/use-current-user";
@@ -13,6 +13,7 @@ export function Sidebar() {
   const nav = [
     { to: "/", label: t("nav.home"), icon: Home },
     { to: "/market", label: t("nav.market"), icon: ShoppingBag },
+    { to: "/quick-buy", label: t("nav.quickBuy"), icon: Zap },
     { to: "/community", label: t("nav.community"), icon: Users },
     { to: "/matches", label: t("nav.matches"), icon: Gamepad2 },
     { to: "/premium", label: t("nav.premium"), icon: Crown },
