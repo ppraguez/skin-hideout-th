@@ -100,7 +100,7 @@ function Matches() {
             id="match-sort"
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="px-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="px-3 py-2 rounded-lg text-sm bg-surface-elevated border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 font-semibold"
           >
             <option value="date-asc">Date — soonest first</option>
             <option value="date-desc">Date — latest first</option>
