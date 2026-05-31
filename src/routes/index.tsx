@@ -161,17 +161,11 @@ function HeroDecor() {
                 {s.wear}
               </span>
             </div>
-            <div className="px-3 py-2 flex items-center justify-between bg-surface/80 backdrop-blur">
-              <div className="min-w-0">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">{s.weapon}</div>
-                <div className="text-xs font-semibold truncate">{s.name}</div>
-              </div>
-              {s.priceUsd ? (
-                <div className="font-mono text-sm font-bold text-amber tabular-nums">${s.priceUsd}</div>
-              ) : (
-                <div className="text-[10px] font-bold text-primary uppercase">Trade</div>
-              )}
+            <div className="px-3 py-2 bg-surface/80 backdrop-blur">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">{s.weapon}</div>
+              <div className="text-xs font-semibold truncate">{s.name}</div>
             </div>
+
           </div>
         );
       })}
