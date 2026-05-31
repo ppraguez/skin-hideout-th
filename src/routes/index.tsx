@@ -113,7 +113,7 @@ function HeroDecor() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none hidden lg:block absolute right-4 xl:right-10 top-1/2 -translate-y-1/2 w-[440px] xl:w-[500px] h-[440px]"
+      className="pointer-events-none hidden md:block absolute right-2 lg:right-6 xl:right-10 top-1/2 -translate-y-1/2 w-[380px] lg:w-[440px] xl:w-[500px] h-[440px]"
     >
       <div className="absolute inset-0 rounded-full bg-primary/15 blur-3xl" />
       <div className="absolute right-10 top-10 h-40 w-40 rounded-full bg-amber/20 blur-3xl" />
