@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, ShoppingBag, Users, Gamepad2, Crown, LogOut, Flame } from "lucide-react";
+import { Home, ShoppingBag, Users, Gamepad2, Crown, LogOut } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { useCurrentUser, useLogout } from "@/hooks/use-current-user";
 
@@ -20,9 +21,11 @@ export function Sidebar() {
   return (
     <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border bg-surface/40 backdrop-blur-md sticky top-0 h-screen px-4 py-6">
       <Link to="/" className="flex items-center gap-2 mb-10 px-2">
-        <div className="relative h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-amber flex items-center justify-center glow-border">
-          <Flame className="h-5 w-5 text-background" strokeWidth={2.5} />
-        </div>
+        <img
+          src={logo}
+          alt="CS2Hideout"
+          className="h-11 w-11 object-contain drop-shadow-[0_0_12px_rgba(255,107,0,0.35)]"
+        />
         <div>
           <div className="font-display font-bold text-lg leading-none">CS2Hideout</div>
           <div className="text-[10px] text-muted-foreground tracking-widest uppercase mt-0.5">{t("sidebar.tagline")}</div>
@@ -87,8 +90,8 @@ export function Sidebar() {
             rel="noopener"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-elevated transition-colors"
           >
-            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/40 to-amber/30 border border-border flex items-center justify-center">
-              <Flame className="h-4 w-4 text-primary" strokeWidth={2.5} />
+            <div className="h-9 w-9 rounded-full bg-surface-elevated border border-border flex items-center justify-center overflow-hidden">
+              <img src={logo} alt="" className="h-8 w-8 object-contain" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium truncate">{t("sidebar.signIn")}</div>
