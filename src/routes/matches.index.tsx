@@ -268,7 +268,14 @@ function MatchCard({ m, t }: { m: LiveMatch; t: (k: string, v?: Record<string, s
       {/* Footer */}
       <div className="flex items-center justify-between mt-5 pt-4 border-t border-border text-xs gap-2">
         <div className="flex flex-col min-w-0">
-          <span className="text-muted-foreground truncate">{formatBangkok(m.beginAt ?? m.scheduledAt)}</span>
+          <span className="text-muted-foreground truncate">
+            {formatBangkok(m.beginAt ?? m.scheduledAt)}
+            {m.beginAt || m.scheduledAt ? (
+              <span className="ml-1 text-[10px] uppercase tracking-wider text-muted-foreground/70">
+                {localTzLabel}
+              </span>
+            ) : null}
+          </span>
           {cd && <span className="text-primary text-[10px] font-mono">{cd}</span>}
           {viewers && m.status === "live" && (
             <span className="text-destructive text-[10px] font-mono">{viewers}</span>
