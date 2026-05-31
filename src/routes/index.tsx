@@ -98,15 +98,14 @@ function Hero() {
 }
 
 function HeroDecor() {
-  const { formatPrice } = useI18n();
   const picks = [
     SKINS.find((s) => s.id === "4"),  // Karambit Fade
     SKINS.find((s) => s.id === "2"),  // AWP Asiimov
   ].filter(Boolean) as typeof SKINS;
 
   const layouts = [
-    { x: 110, y: 110, rot: -8, z: 10, w: 230, glow: "rgba(236, 72, 153, 0.35)" },  // Karambit Fade — magenta
-    { x: 230, y: 250, rot: 6,  z: 20, w: 260, glow: "rgba(255, 140, 60, 0.40)" },  // AWP Asiimov — orange
+    { x: 60,  y: 110, rot: -8, z: 10, w: 230, glow: "rgba(236, 72, 153, 0.35)" },  // Karambit Fade — magenta
+    { x: 180, y: 250, rot: 6,  z: 20, w: 260, glow: "rgba(255, 140, 60, 0.40)" },  // AWP Asiimov — orange
   ];
 
   return (
@@ -167,8 +166,8 @@ function HeroDecor() {
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">{s.weapon}</div>
                 <div className="text-xs font-semibold truncate">{s.name}</div>
               </div>
-              {s.priceThb ? (
-                <div className="font-mono text-sm font-bold text-amber tabular-nums">{formatPrice(s.priceThb)}</div>
+              {s.priceUsd ? (
+                <div className="font-mono text-sm font-bold text-amber tabular-nums">${s.priceUsd}</div>
               ) : (
                 <div className="text-[10px] font-bold text-primary uppercase">Trade</div>
               )}
