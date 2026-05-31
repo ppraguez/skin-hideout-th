@@ -66,25 +66,40 @@ function Matches() {
         ))}
       </div>
 
-      <div className="mt-6 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {isLoading ? (
-          Array.from({ length: 6 }).map((_, i) => (
+      {isLoading ? (
+        <div className="mt-6 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="glass-card rounded-2xl p-6 animate-pulse h-56" />
-          ))
-        ) : isError || apiError ? (
-          <div className="glass-card rounded-2xl p-10 text-center md:col-span-2 xl:col-span-3">
-            <div className="text-3xl mb-2">⚠️</div>
-            <p className="text-sm text-muted-foreground">{apiError ?? "Failed to load matches"}</p>
-          </div>
-        ) : matches.length === 0 ? (
-          <div className="glass-card rounded-2xl p-10 text-center md:col-span-2 xl:col-span-3">
-            <div className="text-3xl mb-2">📺</div>
-            <p className="text-sm text-muted-foreground">{t("matches.empty")}</p>
-          </div>
-        ) : (
-          matches.map((m) => <MatchCard key={m.id} m={m} t={t} />)
-        )}
-      </div>
+          ))}
+        </div>
+      ) : isError || apiError ? (
+        <div className="mt-6 glass-card rounded-2xl p-10 text-center">
+          <div className="text-3xl mb-2">⚠️</div>
+          <p className="text-sm text-muted-foreground">{apiError ?? "Failed to load matches"}</p>
+        </div>
+      ) : matches.length === 0 ? (
+        <div className="mt-6 glass-card rounded-2xl p-10 text-center">
+          <div className="text-3xl mb-2">📺</div>
+          <p className="text-sm text-muted-foreground">{t("matches.empty")}</p>
+        </div>
+      ) : tab === "done" ? (
+        <div className="mt-6 space-y-8">
+          {groupByDay(matches).map((g) => (
+            <section key={g.key}>
+              <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-3">
+                {g.label}
+              </h2>
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {g.items.map((m) => <MatchCard key={m.id} m={m} t={t} />)}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-6 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {matches.map((m) => <MatchCard key={m.id} m={m} t={t} />)}
+        </div>
+      )}
     </AppLayout>
   );
 }
