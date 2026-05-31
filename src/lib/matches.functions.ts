@@ -248,7 +248,23 @@ export const getMatchDetail = createServerFn({ method: "GET" })
     const key = process.env.PANDASCORE_API_KEY;
     if (!key) return { match: null, error: "PandaScore API key not configured" };
     try {
-      const m = await pandaFetch<PandaMatch>(`/csgo/matches/${data.id}`, key);
+      // Some PandaScore plans block GET /csgo/matches/:id but still allow the
+      // list endpoint with a filter — try the direct route first, then fall back.
+      let m: PandaMatch;
+      try {
+        m = await pandaFetch<PandaMatch>(`/csgo/matches/${data.id}`, key);
+      } catch (e) {
+        if (e instanceof Error && /\b403\b/.test(e.message)) {
+          const list = await pandaFetch<PandaMatch[]>(
+            `/csgo/matches?filter[id]=${data.id}&per_page=1`,
+            key,
+          );
+          if (!list.length) throw e;
+          m = list[0];
+        } else {
+          throw e;
+        }
+      }
       const status = statusFromPanda(m.status);
       const base = mapMatch(m, status);
 
