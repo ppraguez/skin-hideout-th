@@ -45,7 +45,25 @@ export const Route = createFileRoute("/api/auth/steam/return")({
           const session = await useSession<SteamSession>(getSessionConfig());
           await session.update({ steamid: profile.steamid });
 
-          return Response.redirect(`${origin}/`, 302);
+          // Render a tiny completion page: if opened in a popup, notify the
+          // opener (so the iframe can refetch the session) and close. Otherwise
+          // redirect home.
+          const html = `<!doctype html><html><head><meta charset="utf-8"><title>Signed in</title></head><body style="background:#0b0b0b;color:#e5e5e5;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div style="text-align:center"><div style="font-size:18px;font-weight:600">Signed in with Steam ✓</div><div style="opacity:.7;font-size:13px;margin-top:8px">You can close this tab.</div></div><script>
+try {
+  if (window.opener && !window.opener.closed) {
+    window.opener.postMessage({ type: "cs2h:steam-signed-in" }, "*");
+    window.close();
+  } else {
+    window.location.replace(${JSON.stringify(`${origin}/`)});
+  }
+} catch (e) {
+  window.location.replace(${JSON.stringify(`${origin}/`)});
+}
+</script></body></html>`;
+          return new Response(html, {
+            status: 200,
+            headers: { "Content-Type": "text/html; charset=utf-8" },
+          });
         } catch (err) {
           console.error("Steam auth return failed:", err);
           return Response.redirect(`${origin}/?auth_error=server`, 302);
