@@ -95,10 +95,10 @@ function Premium() {
               <span className="text-muted-foreground text-sm">{t("premium.premiumPerMonth")}</span>
             </div>
 
-            <div className="w-full mt-8 py-3 rounded-xl bg-muted/50 text-muted-foreground font-semibold border border-border/30 flex items-center justify-center gap-2 cursor-not-allowed">
+            <button disabled aria-disabled="true" className="w-full mt-8 py-3 rounded-xl bg-muted/50 text-muted-foreground font-semibold border border-border/30 flex items-center justify-center gap-2 cursor-not-allowed opacity-70">
               <Lock className="h-4 w-4" />
               {t("premium.premiumCta")}
-            </div>
+            </button>
 
             <div className="mt-5 text-center text-[11px] text-muted-foreground">
               {t("premium.premiumFooter")}
