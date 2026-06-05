@@ -8,6 +8,7 @@ import { Flame, ArrowRight, MessageCircle, Heart, Zap, CheckCircle2 } from "luci
 import { TickerBar } from "@/components/TickerBar";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { getMatches, type LiveMatch, type MatchTeam } from "@/lib/matches.functions";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 
 
