@@ -82,6 +82,7 @@ function QuickBuyStrip() {
 
 function Hero() {
   const { t } = useI18n();
+  const { data: user } = useCurrentUser();
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border bg-surface/60 noise-overlay px-6 sm:px-12 py-14 sm:py-20 mb-16">
       <div className="animated-mesh absolute inset-0 opacity-70" />
@@ -100,9 +101,18 @@ function Hero() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <SteamLoginButton className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-border hover:brightness-110 transition">
-            {t("home.ctaConnect")}
-          </SteamLoginButton>
+          {user ? (
+            <Link
+              to="/quick-buy"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-border hover:brightness-110 transition"
+            >
+              {t("home.ctaSell")} <ArrowRight className="h-4 w-4" />
+            </Link>
+          ) : (
+            <SteamLoginButton className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-border hover:brightness-110 transition">
+              {t("home.ctaConnect")}
+            </SteamLoginButton>
+          )}
           <Link
             to="/market"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-surface/70 backdrop-blur font-semibold text-sm hover:border-primary/60 transition"
