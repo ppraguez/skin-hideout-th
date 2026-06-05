@@ -84,7 +84,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#FF6B00" },
       { property: "og:site_name", content: "CS2Hideout" },
       { property: "og:type", content: "website" },
+      { property: "og:title", content: "CS2Hideout — Hideout Marketplace for CS2 Traders" },
+      { property: "og:description", content: "Community-first CS2 skin trading & deal discovery for Southeast Asia. Zero fees. Buy, sell, trade." },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "CS2Hideout — Hideout Marketplace for CS2 Traders" },
+      { name: "twitter:description", content: "Community-first CS2 skin trading & deal discovery for Southeast Asia. Zero fees. Buy, sell, trade." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
