@@ -21,6 +21,7 @@ import {
   type InventoryQuote,
 } from "@/lib/quick-buy.functions";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { SteamLoginButton } from "@/components/SteamLoginButton";
 
 export const Route = createFileRoute("/quick-buy")({
   head: () => ({
