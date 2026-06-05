@@ -241,12 +241,11 @@ function SignInPrompt() {
       <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
         {t("quickBuy.signInBody")}
       </p>
-      <a
-        href="/api/auth/steam"
-        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:brightness-110 transition"
-      >
-        <LogIn className="h-4 w-4" /> {t("quickBuy.signInCta")}
-      </a>
+      <div className="inline-flex flex-col items-center">
+        <SteamLoginButton className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:brightness-110 transition cursor-pointer">
+          <LogIn className="h-4 w-4" /> {t("quickBuy.signInCta")}
+        </SteamLoginButton>
+      </div>
     </div>
   );
 }
