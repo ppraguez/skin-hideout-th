@@ -1,6 +1,6 @@
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
-/* Fonts: Syne (display) · DM Sans (body) · JetBrains Mono (prices) — loaded via <link> in __root.tsx */
+/* Fonts: Space Grotesk (display) · Inter (body) · JetBrains Mono (prices) — loaded via <link> in __root.tsx */
 @source "../src";
 
 @custom-variant dark (&:is(.dark *));
@@ -13,8 +13,8 @@
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
 
-  --font-sans: "DM Sans", system-ui, sans-serif;
-  --font-display: "Syne", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --color-background: var(--background);
@@ -269,11 +269,99 @@
     animation: live-pulse 1.6s ease-out infinite;
   }
 
+  /* ============================================================
+     Landing-page motion utilities
+     ============================================================ */
+
+  /* Scroll-triggered reveal (JS toggles .is-visible via IntersectionObserver) */
+  .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Animated gradient text */
+  @keyframes gradient-pan {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+  .text-gradient {
+    background: linear-gradient(100deg, var(--primary), var(--amber) 45%, var(--primary));
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-pan 7s ease-in-out infinite;
+  }
+
+  /* Slow rotating decorative ring */
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+  .spin-slow { animation: spin-slow 26s linear infinite; }
+
+  /* Soft pulsing glow */
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.5; }
+    50%      { opacity: 0.85; }
+  }
+  .glow-pulse { animation: glow-pulse 5.5s ease-in-out infinite; }
+
+  /* Scroll-cue bob */
+  @keyframes cue-bob {
+    0%, 100% { transform: translateY(0); opacity: 0.45; }
+    50%      { transform: translateY(7px); opacity: 1; }
+  }
+  .cue-bob { animation: cue-bob 1.9s ease-in-out infinite; }
+
+  /* Sheen sweep on hover targets */
+  @keyframes sheen {
+    0%   { transform: translateX(-120%) skewX(-12deg); }
+    100% { transform: translateX(220%) skewX(-12deg); }
+  }
+  .sheen-host { position: relative; overflow: hidden; }
+  .sheen-host::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, white 18%, transparent), transparent);
+    transform: translateX(-120%) skewX(-12deg);
+    pointer-events: none;
+  }
+  .sheen-host:hover::after { animation: sheen 0.9s ease-out; }
+
+  /* Conic gradient border (for feature cards / CTA) */
+  @keyframes border-spin { to { transform: rotate(360deg); } }
+  .conic-border { position: relative; }
+  .conic-border::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from 0deg, transparent 0deg, var(--primary) 80deg, var(--amber) 140deg, transparent 220deg, transparent 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .conic-border:hover::before { opacity: 1; animation: border-spin 4s linear infinite; }
+
   @media (prefers-reduced-motion: reduce) {
     .reveal, .reveal-stagger > *, .float-card, .animated-mesh, .skeleton,
-    .marquee-track, .ticker-shimmer::after, .live-dot {
+    .marquee-track, .ticker-shimmer::after, .live-dot,
+    .text-gradient, .spin-slow, .glow-pulse, .cue-bob, .sheen-host::after,
+    .conic-border::before {
       animation: none !important;
     }
+    .reveal-on-scroll { opacity: 1; transform: none; transition: none; }
   }
 }
 

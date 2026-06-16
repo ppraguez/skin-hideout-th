@@ -7,7 +7,7 @@ export function MobileNav() {
   const { t } = useI18n();
 
   const items = [
-    { to: "/", label: t("nav.home"), icon: Home },
+    { to: "/dashboard", label: t("nav.home"), icon: Home },
     { to: "/market", label: t("nav.market"), icon: ShoppingBag },
     { to: "/community", label: t("nav.community"), icon: Users },
     { to: "/matches", label: t("nav.matches"), icon: Gamepad2 },
@@ -18,7 +18,7 @@ export function MobileNav() {
     <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-surface/90 backdrop-blur-lg">
       <div className="grid grid-cols-5">
         {items.map((it) => {
-          const active = it.to === "/" ? pathname === "/" : pathname.startsWith(it.to);
+          const active = pathname.startsWith(it.to);
           const Icon = it.icon;
           return (
             <Link

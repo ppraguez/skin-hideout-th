@@ -11,7 +11,7 @@ export function Sidebar() {
   const logout = useLogout();
 
   const nav = [
-    { to: "/", label: t("nav.home"), icon: Home },
+    { to: "/dashboard", label: t("nav.home"), icon: Home },
     { to: "/market", label: t("nav.market"), icon: ShoppingBag },
     { to: "/quick-buy", label: t("nav.quickBuy"), icon: Zap },
     { to: "/community", label: t("nav.community"), icon: Users },
@@ -21,7 +21,7 @@ export function Sidebar() {
 
   return (
     <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border bg-surface/40 backdrop-blur-md sticky top-0 h-screen px-4 py-6">
-      <Link to="/" className="flex items-center gap-2 mb-10 px-2">
+      <Link to="/dashboard" className="flex items-center gap-2 mb-10 px-2">
         <img
           src={logo}
           alt="CS2Hideout"
@@ -35,7 +35,7 @@ export function Sidebar() {
 
       <nav className="flex flex-col gap-1">
         {nav.map((item) => {
-          const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
+          const active = pathname.startsWith(item.to);
           const Icon = item.icon;
           return (
             <Link

@@ -14,6 +14,7 @@ import { Route as QuickBuyRouteImport } from './routes/quick-buy'
 import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MatchesIndexRouteImport } from './routes/matches.index'
@@ -48,6 +49,11 @@ const MarketRoute = MarketRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunityRoute = CommunityRouteImport.update({
@@ -104,6 +110,7 @@ const ApiAuthSteamReturnRoute = ApiAuthSteamReturnRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/community': typeof CommunityRoute
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/market': typeof MarketRouteWithChildren
   '/premium': typeof PremiumRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/community': typeof CommunityRoute
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/market': typeof MarketRouteWithChildren
   '/premium': typeof PremiumRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/community': typeof CommunityRoute
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/market': typeof MarketRouteWithChildren
   '/premium': typeof PremiumRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/community'
+    | '/dashboard'
     | '/login'
     | '/market'
     | '/premium'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/community'
+    | '/dashboard'
     | '/login'
     | '/market'
     | '/premium'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/community'
+    | '/dashboard'
     | '/login'
     | '/market'
     | '/premium'
@@ -210,6 +222,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CommunityRoute: typeof CommunityRoute
+  DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   MarketRoute: typeof MarketRouteWithChildren
   PremiumRoute: typeof PremiumRoute
@@ -257,6 +270,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/community': {
@@ -360,6 +380,7 @@ const ApiAuthSteamRouteWithChildren = ApiAuthSteamRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CommunityRoute: CommunityRoute,
+  DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   MarketRoute: MarketRouteWithChildren,
   PremiumRoute: PremiumRoute,
@@ -374,3 +395,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
