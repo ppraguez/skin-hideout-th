@@ -101,7 +101,14 @@ function Hero() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          {user ? (
+          {isPending ? (
+            <div
+              aria-hidden
+              className="inline-flex items-center px-6 py-3 rounded-xl bg-surface/50 border border-border/50 text-sm font-semibold opacity-0 select-none"
+            >
+              {t("home.ctaConnect")}
+            </div>
+          ) : user ? (
             <Link
               to="/quick-buy"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-border hover:brightness-110 transition"
