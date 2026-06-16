@@ -12,4 +12,10 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Self-deploy target. By default (outside Lovable) Nitro is off and you get a
+  // Vite-only build with no server — which breaks SSR + server functions. On
+  // Vercel (process.env.VERCEL=1) we force Nitro on with the Vercel preset so the
+  // build emits a proper serverless output. Local dev/build is untouched:
+  // process.env.VERCEL is undefined there → nitro stays at its default.
+  nitro: process.env.VERCEL ? { preset: "vercel" } : undefined,
 });

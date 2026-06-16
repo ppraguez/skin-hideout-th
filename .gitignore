@@ -30,3 +30,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code local dev config
+.claude/
+
+# Local env (never commit secrets)
+.env
+.env.local
