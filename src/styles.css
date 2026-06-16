@@ -1,7 +1,5 @@
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
-/* Fonts: Syne (display) · DM Sans (body) · JetBrains Mono (prices) */
-@import url("https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
 @source "../src";
 
 @custom-variant dark (&:is(.dark *));
