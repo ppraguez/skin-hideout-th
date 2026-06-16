@@ -82,7 +82,7 @@ function QuickBuyStrip() {
 
 function Hero() {
   const { t } = useI18n();
-  const { data: user } = useCurrentUser();
+  const { data: user, isPending } = useCurrentUser();
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border bg-surface/60 noise-overlay px-6 sm:px-12 py-14 sm:py-20 mb-16">
       <div className="animated-mesh absolute inset-0 opacity-70" />
