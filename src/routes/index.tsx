@@ -13,6 +13,9 @@ import {
   ChevronDown,
   Sparkles,
   Lock,
+  Quote,
+  KeyRound,
+  Users,
 } from "lucide-react";
 import { SKINS, formatThb, type Skin } from "@/lib/mock-data";
 import { SkinCard } from "@/components/SkinCard";
@@ -64,7 +67,9 @@ function Landing() {
       <Stats />
       <Trending />
       <HowItWorks />
+      <TrustSecurity />
       <Features />
+      <Testimonials />
       <QuickBuyBand />
       <FinalCta />
       <LandingFooter />
@@ -93,8 +98,9 @@ function LandingNav() {
     >
       <nav className="mx-auto max-w-7xl px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <span className="relative grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground font-display font-bold text-lg shadow-glow">
-            H
+          <span className="relative grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-primary to-amber text-primary-foreground font-display font-bold text-lg shadow-glow ring-1 ring-white/10 transition-transform group-hover:scale-105">
+            <span className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/25 to-white/10" />
+            <span className="relative">H</span>
           </span>
           <span className="font-display font-bold text-lg tracking-tight">
             CS2<span className="text-primary">Hideout</span>
@@ -192,6 +198,38 @@ function Hero() {
             <span className="inline-flex items-center gap-1.5">
               <BadgeCheck className="h-4 w-4 text-success" /> Verified sellers
             </span>
+          </div>
+
+          {/* Social proof */}
+          <div className="mt-10 flex items-center gap-4">
+            <div className="flex -space-x-2.5">
+              {[
+                { i: "JK", from: "#FF6B00", to: "#FF4500" },
+                { i: "AN", from: "#22c55e", to: "#0ea5e9" },
+                { i: "RT", from: "#a855f7", to: "#ec4899" },
+                { i: "MP", from: "#f59e0b", to: "#ef4444" },
+              ].map((a) => (
+                <span
+                  key={a.i}
+                  className="avatar-coin h-9 w-9 text-[11px]"
+                  style={{ background: `linear-gradient(135deg, ${a.from}, ${a.to})` }}
+                  aria-hidden
+                >
+                  {a.i}
+                </span>
+              ))}
+            </div>
+            <div className="text-sm">
+              <div className="flex items-center gap-1 text-amber">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="h-3.5 w-3.5 fill-amber" />
+                ))}
+                <span className="ml-1 font-semibold text-foreground tabular-nums">4.9</span>
+              </div>
+              <div className="text-muted-foreground">
+                Trusted by <span className="text-foreground font-medium">3,200+</span> SEA traders
+              </div>
+            </div>
           </div>
         </div>
 
@@ -443,13 +481,165 @@ function Features() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {feats.map((f, i) => (
           <Reveal key={f.title} delay={(i % 3) * 80}>
-            <div className="conic-border group h-full rounded-2xl glass-card p-7 hover:-translate-y-1 transition-transform duration-300">
-              <span className="grid h-12 w-12 place-items-center rounded-xl bg-surface-elevated border border-border text-primary group-hover:scale-110 transition-transform">
+            <div className="lift group h-full rounded-2xl glass-card p-7">
+              <span className="grid h-12 w-12 place-items-center rounded-xl bg-surface-elevated border border-border text-primary transition-[transform,border-color] duration-300 group-hover:scale-105 group-hover:border-primary/40">
                 <f.icon className="h-6 w-6" />
               </span>
               <h3 className="mt-5 font-display text-lg font-bold">{f.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{f.body}</p>
             </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------- Trust & Security */
+
+function TrustSecurity() {
+  const pillars = [
+    {
+      icon: ShieldCheck,
+      title: "Steam Trade Protection",
+      body: "Every trade runs through Steam's official protection window. Items and funds are held until both sides clear.",
+    },
+    {
+      icon: Lock,
+      title: "Escrow-style payouts",
+      body: "Your money is held securely and released automatically the moment a trade completes — never before.",
+    },
+    {
+      icon: BadgeCheck,
+      title: "Verified sellers only",
+      body: "Reputation scores, trade history and verified Steam profiles are surfaced on every single listing.",
+    },
+    {
+      icon: KeyRound,
+      title: "Encrypted & private",
+      body: "Bank-grade encryption on every session. We never store your Steam password or payment credentials.",
+    },
+  ];
+  const methods = ["PromptPay", "TrueMoney", "Bank Transfer", "Visa", "Mastercard"];
+
+  return (
+    <section className="relative scroll-mt-20 py-16 sm:py-24">
+      <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute left-1/2 top-1/3 h-[360px] w-[760px] -translate-x-1/2 rounded-full bg-success/5 blur-[130px]" />
+      </div>
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <Reveal className="text-center max-w-2xl mx-auto mb-14">
+          <span className="eyebrow inline-flex items-center gap-2 justify-center">
+            <ShieldCheck className="h-3.5 w-3.5" /> Safety first
+          </span>
+          <h2 className="mt-3 font-display text-3xl sm:text-5xl font-bold tracking-tight">
+            Every trade, <span className="text-gradient">fully protected.</span>
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            We built CS2Hideout for traders who&apos;ve been burned before. Four layers of protection sit
+            behind every transaction — so you can trade with total peace of mind.
+          </p>
+        </Reveal>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {pillars.map((p, i) => (
+            <Reveal key={p.title} delay={i * 90}>
+              <div className="lift h-full rounded-2xl glass-card p-6">
+                <span className="grid h-12 w-12 place-items-center rounded-xl bg-success/12 border border-success/25 text-success">
+                  <p.icon className="h-6 w-6" />
+                </span>
+                <h3 className="mt-5 font-display text-base font-bold">{p.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{p.body}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal delay={120} className="mt-12">
+          <div className="divider-glow" />
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-x-8 gap-y-4 text-center">
+            <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground/70">
+              Cash out with
+            </span>
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              {methods.map((m) => (
+                <span
+                  key={m}
+                  className="rounded-lg border border-border bg-surface/60 px-3.5 py-1.5 text-sm font-medium text-foreground/85 backdrop-blur"
+                >
+                  {m}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ----------------------------------------------------------- Testimonials */
+
+function Testimonials() {
+  const quotes = [
+    {
+      body: "Sold my Karambit Fade in under an hour and the payout hit my bank before the trade hold even cleared. This is how it should work.",
+      name: "Jirayu K.",
+      role: "Bangkok, Thailand",
+      coin: ["#FF6B00", "#FF4500"],
+    },
+    {
+      body: "I've been scammed on Discord trades before. The escrow here is the real deal — I finally feel safe buying high-tier knives.",
+      name: "Andi N.",
+      role: "Jakarta, Indonesia",
+      coin: ["#22c55e", "#0ea5e9"],
+    },
+    {
+      body: "Zero fees actually means zero. The Quick-Buy quotes are fair and the THB pricing saves me the conversion headache every time.",
+      name: "Reyes T.",
+      role: "Manila, Philippines",
+      coin: ["#a855f7", "#ec4899"],
+    },
+  ];
+
+  return (
+    <section className="mx-auto max-w-7xl px-5 sm:px-8 py-16 sm:py-24">
+      <Reveal className="text-center max-w-2xl mx-auto mb-14">
+        <span className="eyebrow inline-flex items-center gap-2 justify-center">
+          <Users className="h-3.5 w-3.5" /> Loved by traders
+        </span>
+        <h2 className="mt-3 font-display text-3xl sm:text-5xl font-bold tracking-tight">
+          Trusted across Southeast Asia
+        </h2>
+      </Reveal>
+
+      <div className="grid md:grid-cols-3 gap-5">
+        {quotes.map((q, i) => (
+          <Reveal key={q.name} delay={i * 100}>
+            <figure className="lift h-full rounded-2xl glass-card p-7 flex flex-col">
+              <Quote className="h-7 w-7 text-primary/40" />
+              <blockquote className="mt-4 text-sm leading-relaxed text-foreground/90 flex-1">
+                {q.body}
+              </blockquote>
+              <div className="mt-5 flex items-center gap-1 text-amber">
+                {Array.from({ length: 5 }).map((_, s) => (
+                  <Star key={s} className="h-3.5 w-3.5 fill-amber" />
+                ))}
+              </div>
+              <figcaption className="mt-4 flex items-center gap-3">
+                <span
+                  className="avatar-coin h-10 w-10 text-xs"
+                  style={{ background: `linear-gradient(135deg, ${q.coin[0]}, ${q.coin[1]})` }}
+                  aria-hidden
+                >
+                  {q.name.split(" ").map((w) => w[0]).join("")}
+                </span>
+                <span>
+                  <span className="block text-sm font-semibold">{q.name}</span>
+                  <span className="block text-xs text-muted-foreground">{q.role}</span>
+                </span>
+              </figcaption>
+            </figure>
           </Reveal>
         ))}
       </div>

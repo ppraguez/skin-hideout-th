@@ -336,32 +336,61 @@
   }
   .sheen-host:hover::after { animation: sheen 0.9s ease-out; }
 
-  /* Conic gradient border (for feature cards / CTA) */
-  @keyframes border-spin { to { transform: rotate(360deg); } }
-  .conic-border { position: relative; }
-  .conic-border::before {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: conic-gradient(from 0deg, transparent 0deg, var(--primary) 80deg, var(--amber) 140deg, transparent 220deg, transparent 360deg);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
+  /* Hairline divider with a soft center glow */
+  .divider-glow {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--primary) 38%, transparent),
+      transparent
+    );
   }
-  .conic-border:hover::before { opacity: 1; animation: border-spin 4s linear infinite; }
+
+  /* Stacked avatar coin (social proof) */
+  .avatar-coin {
+    display: grid;
+    place-items: center;
+    border-radius: 9999px;
+    border: 2px solid var(--background);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: white;
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Consistent premium hover lift for cards */
+  .lift {
+    transition:
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.35s ease,
+      border-color 0.35s ease;
+  }
+  .lift:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
+    box-shadow: 0 24px 50px -28px rgba(0, 0, 0, 0.85);
+  }
+
+  /* Section eyebrow — consistent kicker label */
+  .eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--primary);
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .reveal, .reveal-stagger > *, .float-card, .animated-mesh, .skeleton,
     .marquee-track, .ticker-shimmer::after, .live-dot,
-    .text-gradient, .spin-slow, .glow-pulse, .cue-bob, .sheen-host::after,
-    .conic-border::before {
+    .text-gradient, .spin-slow, .glow-pulse, .cue-bob, .sheen-host::after {
       animation: none !important;
     }
     .reveal-on-scroll { opacity: 1; transform: none; transition: none; }
+    .lift { transition: none; }
+    .lift:hover { transform: none; }
   }
 }
 
